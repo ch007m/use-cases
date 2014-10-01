@@ -29,5 +29,6 @@
         <module>demo-camel-jsonpath</module>
         <module>demo-camel-standalone</module>
         <module>hawtjms-amqp-example</module>
+        <module>demo-osgi-service</module>
     </modules>
 </project>

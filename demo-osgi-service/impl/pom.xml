@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>demo-osgi-service</artifactId>
+        <groupId>my.cool.demo</groupId>
+        <version>1.0</version>
+    </parent>
+
+    <groupId>my.cool.demo</groupId>
+    <artifactId>impl</artifactId>
+    <packaging>bundle</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>my.cool.demo</groupId>
+            <artifactId>service</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.4.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Name>${project.name}</Bundle-Name>
+                        <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+                        <Private-Package>my.cool.demo.impl</Private-Package>
+                        <Import-Package>my.cool.demo</Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+                <version>1.15.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-scr-scrdescriptor</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>scr</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+
+</project>
