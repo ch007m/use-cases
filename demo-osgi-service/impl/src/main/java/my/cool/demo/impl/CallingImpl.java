@@ -22,6 +22,6 @@ public class CallingImpl implements Calling {
 
     @Override
     public void sayHello(String message) {
-        System.out.println("Hello " + message + " !");
+        System.out.println("Hello : " + message + " !");
     }
 }

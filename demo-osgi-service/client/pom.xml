@@ -37,7 +37,6 @@
                     <instructions>
                         <Bundle-Name>${project.name}</Bundle-Name>
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Activator>my.cool.demo.app.Client</Bundle-Activator>
                         <Import-Package>
                             org.osgi.framework,
                             my.cool.demo
