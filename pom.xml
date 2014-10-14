@@ -30,5 +30,6 @@
         <module>demo-camel-standalone</module>
         <module>hawtjms-amqp-example</module>
         <module>demo-osgi-service</module>
+        <module>demo-htt4-rest</module>
     </modules>
 </project>
