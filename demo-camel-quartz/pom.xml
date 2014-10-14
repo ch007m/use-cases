@@ -90,7 +90,7 @@
                 <artifactId>camel-maven-plugin</artifactId>
                 <version>${camel.version}</version>
                 <configuration>
-                <mainClass>my.cool.demo.MainApp</mainClass>
+                    <mainClass>my.cool.demo.MainApp</mainClass>
                 </configuration>
             </plugin>
         </plugins>

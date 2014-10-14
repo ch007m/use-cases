@@ -11,7 +11,7 @@
 
     <groupId>my.cool.demo</groupId>
     <artifactId>demo-htt4-rest</artifactId>
-    <packaging>pom</packaging>
+    <packaging>bundle</packaging>
 
     <name>Demo :: Camel :: HTTP4 - REST</name>
 
@@ -75,23 +75,13 @@
     </dependencies>
 
     <build>
-        <defaultGoal>install</defaultGoal>
-
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.camel</groupId>
                 <artifactId>camel-maven-plugin</artifactId>
                 <version>${camel.version}</version>
                 <configuration>
-                    <mainClass>my.cool.demo.MainApp</mainClass>
+                    <mainClass>org.dabou.rest.MainApp</mainClass>
                 </configuration>
             </plugin>
             <plugin>
