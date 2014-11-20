@@ -10,6 +10,7 @@ import io.dabou.service.PaymentService;
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
+import org.apache.cxf.rs.security.cors.CrossOriginResourceSharingFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,10 +37,11 @@ public class AppConfig {
     @DependsOn("cxf")
     public Server jaxRsServer() {
         JAXRSServerFactoryBean factory = RuntimeDelegate.getInstance().createEndpoint(jaxRsApiApplication(), JAXRSServerFactoryBean.class);
-        // JAXRSServerFactoryBean factory = new JAXRSServerFactoryBean();
         factory.setServiceBeans(Arrays.<Object>asList(apiListingResourceJson()));
         factory.setResourceProvider(ServiceClazz, new MyResourceProvider(ServiceClazz));
         factory.setAddress(factory.getAddress());
+        // Add CORS support
+        factory.setProvider(new CrossOriginResourceSharingFilter());
         factory.setProviders(Arrays.<Object>asList(jsonProvider(), resourceListingProvider(), apiDeclarationProvider()));
         return factory.create();
     }

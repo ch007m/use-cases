@@ -11,9 +11,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
-import java.net.URI;
-import java.net.URL;
-
 public class Starter {
     private static final int SERVER_PORT = 8080;
     private static final String CONTEXT_PATH = "rest";
