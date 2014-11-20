@@ -30,6 +30,7 @@
         <module>demo-camel-standalone</module>
         <module>hawtjms-amqp-example</module>
         <module>demo-osgi-service</module>
-        <module>demo-htt4-rest</module>
+        <module>demo-http4-rest</module>
+        <module>rest-cxf-swagger</module>
     </modules>
 </project>
