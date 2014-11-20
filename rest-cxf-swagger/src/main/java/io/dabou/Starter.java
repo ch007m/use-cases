@@ -23,7 +23,9 @@ public class Starter {
         System.setProperty( AppConfig.SERVER_HOST, "localhost" );
         System.setProperty( AppConfig.CONTEXT_PATH, CONTEXT_PATH );
 
-        // Configuring Apache CXF servlet and Spring listener
+        /*
+            Configuring Apache CXF servlet and Spring listener
+         */
         final ServletHolder servletHolder = new ServletHolder( new CXFServlet() );
         final ServletContextHandler context = new ServletContextHandler();
         context.setContextPath( "/" );
@@ -33,7 +35,9 @@ public class Starter {
         context.setInitParameter( "contextClass", AnnotationConfigWebApplicationContext.class.getName() );
         context.setInitParameter( "contextConfigLocation", AppConfig.class.getName() );
 
-        // Configuring Swagger as static web resource
+        /*
+           Configuring Swagger as static web resource
+         */
         final ServletHolder swaggerHolder = new ServletHolder( new DefaultServlet() );
         final ServletContextHandler swagger = new ServletContextHandler();
         swagger.setContextPath( "/swagger" );
