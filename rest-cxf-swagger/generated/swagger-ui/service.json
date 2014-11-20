@@ -1,0 +1,9 @@
+{
+  "apiVersion" : "1.0",
+  "swaggerVersion" : "1.2",
+  "apis" : [ {
+    "path" : "/payments.{format}",
+    "description" : "Operations about payments"
+  } ],
+  "basePath" : "http://www.wordnik.com/restapi/doc"
+}

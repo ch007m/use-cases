@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>parent</artifactId>
+        <groupId>my.cool.demo</groupId>
+        <version>1.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cxf-rest-swagger</artifactId>
+    <name>CXF REST :: Swagger</name>
+
+    <properties>
+        <swagger.version>1.3.9</swagger.version>
+        <swagger-ui.version>2.0.24</swagger-ui.version>
+        <cxf.version>2.7.8</cxf.version>
+        <spring.version>3.2.6.RELEASE</spring.version>
+        <jetty.version>8.1.14.v20131031</jetty.version>
+
+        <swagger.url>https://github.com/swagger-api/swagger-ui/archive/v${swagger-ui.version}</swagger.url>
+        <destDir>${basedir}/src/main/resources/webapp</destDir>
+    </properties>
+
+    <dependencies>
+        <!-- CXF & Swagger -->
+        <dependency>
+            <groupId>com.wordnik</groupId>
+            <artifactId>swagger-jaxrs_2.10</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http-jetty</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-security-cors</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+        </dependency>
+
+        <!-- logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.7</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.7</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+
+        <!-- Spring -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <!-- Jetty -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-webapp</artifactId>
+            <version>${jetty.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.github.kongchen</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <version>2.3.1</version>
+                <configuration>
+                    <apiSources>
+                        <apiSource>
+                            <locations>io.dabou.service</locations>
+                            <apiVersion>1.0</apiVersion>
+                            <basePath>http://payments.dabou.io</basePath>
+
+                            <!---Document generation parameters BEGIN-->
+                            <outputTemplate>templates/strapdown.html.mustache</outputTemplate>
+                            <mustacheFileRoot>${basedir}/templates/</mustacheFileRoot>
+                            <outputPath>${basedir}/generated/document.html</outputPath>
+                            <!---Document generation parameters END-->
+
+                            <!---Swagger JSON parameters BEGIN-->
+                            <swaggerDirectory>generated/swagger-ui</swaggerDirectory>
+                            <swaggerUIDocBasePath>http://www.wordnik.com/restapi/doc</swaggerUIDocBasePath>
+                            <useOutputFlatStructure>false</useOutputFlatStructure>
+                        </apiSource>
+                    </apiSources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+<!--            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.9</version>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.webjars</groupId>
+                                    <artifactId>swagger-ui</artifactId>
+                                    <version>2.0.24</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+
+                                </artifactItem>
+                            </artifactItems>
+                            &lt;!&ndash; other configurations here &ndash;&gt;
+                            <outputDirectory>${project.build.outputDirectory}/webapp</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>-->
+
+            <!-- Download Swagger UI project from GitHub -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>wagon-maven-plugin</artifactId>
+                <version>1.0-beta-5</version>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>download-single</goal>
+                        </goals>
+                        <configuration>
+                            <url>${swagger.url}</url>
+                            <fromFile>v${swagger-ui.version}.tar.gz</fromFile>
+                            <toFile>${project.build.directory}/swagger-ui-${swagger-ui.version}.tar.gz</toFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Untar content and move it to webapp folder -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <echo message="untar archive"/>
+                                <gunzip src="${project.build.directory}/swagger-ui-${swagger-ui.version}.tar.gz"/>
+                                <untar src="${project.build.directory}/swagger-ui-${swagger-ui.version}.tar" dest="${project.build.directory}"/>
+                                <echo message="moving resources"/>
+                                <move todir="${destDir}" overwrite="no">
+                                    <fileset dir="${project.build.directory}/swagger-ui-${swagger-ui.version}/dist"/>
+                                </move>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
