@@ -12,6 +12,7 @@
     <groupId>my.cool.demo</groupId>
     <artifactId>client</artifactId>
     <packaging>bundle</packaging>
+    <name>Demo :: OSGI :: Client</name>
 
     <dependencies>
         <dependency>

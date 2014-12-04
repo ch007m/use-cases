@@ -7,7 +7,7 @@
     <version>1.0</version>
     <packaging>pom</packaging>
 
-    <name>Cool Projects - Use Cases</name>
+    <name>Demo :: Use Cases &amp; Simple Projects</name>
 
     <build>
         <plugins>
@@ -32,5 +32,6 @@
         <module>demo-osgi-service</module>
         <module>demo-http4-rest</module>
         <module>rest-cxf-swagger</module>
+        <module>camel-osgi-groovy</module>
     </modules>
 </project>

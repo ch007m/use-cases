@@ -12,6 +12,7 @@
     <groupId>my.cool.demo</groupId>
     <artifactId>service</artifactId>
     <packaging>bundle</packaging>
+    <name>Demo :: OSGI :: Service</name>
 
     <build>
         <plugins>
