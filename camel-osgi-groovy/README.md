@@ -2,7 +2,7 @@
 
 * Download Apache Karaf 3.0.2, decompress the zip/tar.gz
 * Move to the bin directory
-* Start Karaf`
+* Start Karaf
 
     ```./karaf```
     
