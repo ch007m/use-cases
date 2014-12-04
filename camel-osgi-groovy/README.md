@@ -4,7 +4,7 @@
 * Move to the bin directory
 * Start Karaf
 
-    ```./karaf```
+    ````./karaf````
     
 * Install the Camel 2.14 Repository
     
