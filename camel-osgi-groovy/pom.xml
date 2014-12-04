@@ -23,6 +23,7 @@
     </properties>
 
     <dependencies>
+        <!-- Camel -->
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
@@ -36,6 +37,11 @@
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-test-blueprint</artifactId>
+            <version>${camel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-script</artifactId>
             <version>${camel.version}</version>
         </dependency>
         <dependency>
@@ -69,7 +75,16 @@
                         <Bundle-Name>${project.name}</Bundle-Name>
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                         <Private-Package>io.dabou</Private-Package>
-                        <Import-Package>*</Import-Package>
+                        <Import-Package>
+                            org.apache.camel.builder;version="[2.14,3)",
+                            org.apache.camel.model;version="[2.14,3)",
+                            org.apache.camel.language.groovy.*;version="[2.14,3)";resolution="optional",
+                            org.apache.camel.groovy.*;version="[2.14,3)";resolution="optional",
+                            org.osgi.service.blueprint;version="[1.0.0,2.0.0)"
+                        </Import-Package>
+                        <DynamicImport-Package>
+                            *
+                        </DynamicImport-Package>
                     </instructions>
                 </configuration>
             </plugin>

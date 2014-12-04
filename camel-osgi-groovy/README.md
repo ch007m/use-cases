@@ -14,6 +14,8 @@
 ```    
     feature:install camel
     feature:install camel-groovy
+    feature:install camel-script
+    feature:install camel-script-groovy
 ```    
 * Install the demo example
 ```    
