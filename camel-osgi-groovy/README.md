@@ -1,6 +1,6 @@
 # Deploy on Karaf
 
-* Download Apache Karaf 3.0.2, decompress the zip/tar.gz
+* Download [Apache Karaf 3.0.2](http://www.apache.org/dyn/closer.cgi/karaf/3.0.2/apache-karaf-3.0.2.tar.gz), decompress the zip/tar.gz
 * Move to the bin directory
 * Start Karaf
 ```
