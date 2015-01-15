@@ -3,19 +3,13 @@ package org.dabou;
 import org.dabou.bean.User;
 import org.dabou.bean.UserImpl;
 import org.dabou.service.HelloWorld;
-import org.dabou.service.HelloWorldImpl;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by chmoulli on 15/01/15.
- */
 public class ClientWS {
 
     private static final String PORT = "9000";
