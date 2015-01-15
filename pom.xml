@@ -33,5 +33,6 @@
         <module>demo-http4-rest</module>
         <module>rest-cxf-swagger</module>
         <module>camel-osgi-groovy</module>
+        <module>standalone-webservice</module>
     </modules>
 </project>
