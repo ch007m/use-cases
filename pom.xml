@@ -34,5 +34,6 @@
         <module>rest-cxf-swagger</module>
         <module>camel-osgi-groovy</module>
         <module>standalone-webservice</module>
+        <module>cdi-extension</module>
     </modules>
 </project>

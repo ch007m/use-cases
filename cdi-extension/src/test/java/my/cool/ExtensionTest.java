@@ -1,0 +1,55 @@
+package my.cool;
+
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.ArchivePaths;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.Extension;
+import javax.inject.Inject;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
+
+@RunWith(Arquillian.class)
+public class ExtensionTest {
+
+    @Inject
+    private Instance<Foo> foo;
+
+    /**
+     * Webapp with beans.xml and no classes
+     */
+    @Deployment
+    public static WebArchive createWebArchive() {
+        WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war");
+        war.addAsLibrary(createJavaArchive());
+        war.addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"));
+        return war;
+    }
+
+    /**
+     * Java library with two classes (Foo, Bar) and no beans.xml - thus the classes are not beans implicitly.
+     * However, both Foo and Bar classes are registered through the SimpleExtension. Bar specializes Foo.
+     */
+    public static JavaArchive createJavaArchive() {
+        JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "test.jar");
+        jar.addClasses(SimpleExtension.class, Foo.class);
+        jar.addAsServiceProvider(Extension.class, SimpleExtension.class);
+        jar.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
+        return jar;
+    }
+
+    @Test
+    public void testExtension() {
+        Assert.assertEquals("bar", foo.get().ping());
+    }
+}
