@@ -11,8 +11,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.Extension;
 import javax.inject.Inject;
 
 import static junit.framework.Assert.assertEquals;
@@ -23,7 +21,7 @@ import static org.junit.Assert.assertFalse;
 public class ExtensionTest {
 
     @Inject
-    private Instance<Foo> foo;
+    private Service svc;
 
     /**
      * Webapp with beans.xml and no classes
@@ -42,14 +40,14 @@ public class ExtensionTest {
      */
     public static JavaArchive createJavaArchive() {
         JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "test.jar");
-        jar.addClasses(SimpleExtension.class, Foo.class);
-        jar.addAsServiceProvider(Extension.class, SimpleExtension.class);
+        jar.addClasses(SimpleExtension.class, ServiceBean.class);
+/*        jar.addAsServiceProvider(Extension.class, SimpleExtension.class);*/
         jar.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
         return jar;
     }
 
     @Test
     public void testExtension() {
-        Assert.assertEquals("bar", foo.get().ping());
+        Assert.assertEquals("foo", svc.getFoo().ping());
     }
 }

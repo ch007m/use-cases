@@ -57,7 +57,6 @@
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Weld -->
@@ -81,12 +80,6 @@
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
         </dependency>
-
-        <!--        <dependency>
-                    <groupId>org.jboss.weld</groupId>
-                    <artifactId>weld-core-test-arquillian</artifactId>
-                </dependency>-->
-
     </dependencies>
 
     <profiles>
@@ -95,15 +88,21 @@
             <id>weld-ee-embedded</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
-                <property>
-                    <name>!incontainer</name>
-                </property>
             </activation>
             <dependencies>
                 <dependency>
+                    <groupId>javax.enterprise</groupId>
+                    <artifactId>cdi-api</artifactId>
+                </dependency>
+                <!-- test dependencies -->
+                <dependency>
+                    <groupId>org.jboss.weld</groupId>
+                    <artifactId>weld-core-impl</artifactId>
+                    <scope>test</scope>
+                </dependency>
+                <dependency>
                     <groupId>org.jboss.arquillian.container</groupId>
                     <artifactId>arquillian-weld-ee-embedded-1.1</artifactId>
-                    <scope>test</scope>
                 </dependency>
             </dependencies>
         </profile>
