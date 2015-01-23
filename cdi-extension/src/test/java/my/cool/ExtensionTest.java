@@ -35,13 +35,11 @@ public class ExtensionTest {
     }
 
     /**
-     * Java library with two classes (Foo, Bar) and no beans.xml - thus the classes are not beans implicitly.
-     * However, both Foo and Bar classes are registered through the SimpleExtension. Bar specializes Foo.
-     */
+     * Java Archive containing the extension
+     **/
     public static JavaArchive createJavaArchive() {
         JavaArchive jar = ShrinkWrap.create(JavaArchive.class, "test.jar");
-        jar.addClasses(SimpleExtension.class, ServiceBean.class);
-/*        jar.addAsServiceProvider(Extension.class, SimpleExtension.class);*/
+        jar.addClasses(SimpleExtension.class);
         jar.addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
         return jar;
     }
