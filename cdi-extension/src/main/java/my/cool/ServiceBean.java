@@ -35,9 +35,7 @@ public final class ServiceBean implements Bean<Service>, PassivationCapable {
     }
 
     @Override
-    public Set<InjectionPoint> getInjectionPoints() {
-        return Collections.emptySet();
-    }
+    public Set<InjectionPoint> getInjectionPoints() { return target.getInjectionPoints(); }
 
     @Override
     public String getName() {
