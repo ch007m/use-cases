@@ -1,6 +1,5 @@
 package my.cool;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.*;
@@ -20,6 +19,7 @@ public final class ServiceBean implements Bean<Service>, PassivationCapable {
     public ServiceBean(BeanManager manager) {
         this.qualifiers = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(AnyLiteral.INSTANCE, DefaultLiteral.INSTANCE)));
         AnnotatedType<Service> annotatedType = manager.createAnnotatedType(Service.class);
+        // Calculate the types of the Bean (Object, Interface, Bean, ...)
         this.types = Collections.unmodifiableSet(annotatedType.getTypeClosure());
         this.target = manager.createInjectionTarget(annotatedType);
     }
@@ -70,8 +70,12 @@ public final class ServiceBean implements Bean<Service>, PassivationCapable {
     }
 
     @Override
-    public Service create(CreationalContext<Service> creationalContext) {
-        return new Service();
+    public Service create(CreationalContext<Service> creational) {
+        Service svc = target.produce(creational);
+        target.inject(svc, creational);
+        target.postConstruct(svc);
+        creational.push(svc);
+        return svc;
     }
 
     @Override
