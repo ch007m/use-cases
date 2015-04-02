@@ -35,5 +35,6 @@
         <module>camel-osgi-groovy</module>
         <module>standalone-webservice</module>
         <module>cdi-extension</module>
+        <module>quickstart-camel-rest</module>
     </modules>
 </project>

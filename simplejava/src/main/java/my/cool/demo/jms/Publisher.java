@@ -36,7 +36,7 @@ class Publisher {
         int port = Integer.parseInt(env("ACTIVEMQ_PORT", "61616"));
         String destination = arg(args, 0, "foo.bar");
 
-        int messages = 100;
+        int messages = 10;
         int size = 256;
 
         String DATA = "abcdefghijklmnopqrstuvwxyz";
@@ -45,7 +45,7 @@ class Publisher {
             body += DATA.charAt(i%DATA.length());
         }
 
-        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://" + host + ":" + port);
+        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://" + host + ":" + port + "?jms.useAsyncSend=false");
 
         Connection connection = factory.createConnection(user, password);
         logger.info("Connection created");
