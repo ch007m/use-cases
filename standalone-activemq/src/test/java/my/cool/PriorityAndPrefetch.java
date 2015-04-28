@@ -122,6 +122,9 @@ public class PriorityAndPrefetch extends TestCase {
         ProducerThread p1 = new ProducerThread(producer, NUM_MESSAGES);
         p1.start();
         p1.join();
+        
+        low.join();
+        high.join();
 
         long resultLow = low.getCounter().addAndGet(0);
         long resultHigh = high.getCounter().addAndGet(0);
