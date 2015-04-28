@@ -22,9 +22,9 @@ public class RetroactiveConsumer extends TestCase {
     private static final Logger log = LoggerFactory.getLogger(RetroactiveConsumer.class);
 
     private BrokerService broker;
-    private String ACTIVEMQ_BROKER_URI;
+    private final static String ACTIVEMQ_BROKER_URI = "tcp://localhost:62626";
 
-    private final String ACTIVEMQ_BROKER_BIND = "tcp://localhost:0";
+    private final String ACTIVEMQ_BROKER_BIND = "tcp://localhost:62626";
 
     @Override
     protected void setUp() throws Exception {
@@ -38,12 +38,10 @@ public class RetroactiveConsumer extends TestCase {
 
     protected void restartBroker() throws Exception {
         broker.stop();
-        createBroker();
-        broker.start();
+        createRestartedBroker();
     }
 
     private void createBroker() throws Exception {
-
         PolicyEntry policy = new PolicyEntry();
         policy.setDispatchPolicy(new SimpleDispatchPolicy());
         policy.setSubscriptionRecoveryPolicy(new FixedCountSubscriptionRecoveryPolicy());
@@ -55,8 +53,24 @@ public class RetroactiveConsumer extends TestCase {
         broker.setDeleteAllMessagesOnStartup(true);
         broker.setPersistenceAdapter(createPersistenceAdapter());
         broker.setPersistent(true);
-        broker.setUseJmx(true);
+
         broker.addConnector(ACTIVEMQ_BROKER_BIND);
+        broker.start();
+        broker.waitUntilStarted();
+    }
+
+    private void createRestartedBroker() throws Exception {
+        PolicyEntry policy = new PolicyEntry();
+        policy.setDispatchPolicy(new SimpleDispatchPolicy());
+        policy.setSubscriptionRecoveryPolicy(new FixedCountSubscriptionRecoveryPolicy());
+        PolicyMap pMap = new PolicyMap();
+        pMap.setDefaultEntry(policy);
+        
+        broker = new BrokerService();
+        broker.setBrokerName("durable-broker");
+        broker.setDeleteAllMessagesOnStartup(false);
+        broker.setPersistenceAdapter(createPersistenceAdapter());
+        broker.setPersistent(true);
         broker.start();
         broker.waitUntilStarted();
     }
@@ -68,12 +82,16 @@ public class RetroactiveConsumer extends TestCase {
         adapter.deleteAllMessages();
         return adapter;
     }
-
-    public void testFixedRecoveryPolicy() throws Exception {
-
-        ACTIVEMQ_BROKER_URI = broker.getTransportConnectors().get(0).getPublishableConnectString();
+    
+    private static Connection getConnection() throws JMSException{
         Connection connection = new ActiveMQConnectionFactory(ACTIVEMQ_BROKER_URI).createConnection();
         connection.setClientID("cliId1");
+        return connection;
+    }
+
+    public void testFixedRecoveryPolicy() throws Exception {
+        
+        Connection connection = getConnection();
         connection.start();
 
         // Create the durable sub.
@@ -81,7 +99,6 @@ public class RetroactiveConsumer extends TestCase {
 
         // Ensure that consumer will receive messages sent before it was created
         Topic topic = session.createTopic("TestTopic?consumer.retroactive=true");
-        //TopicSubscriber consumer = session.createDurableSubscriber(topic, "sub1");
         TopicSubscriber sub1 = session.createDurableSubscriber(topic, "sub1");
 
         // Produce a message
@@ -91,17 +108,14 @@ public class RetroactiveConsumer extends TestCase {
         // Make sure it works when the durable sub is active.
         producer.send(session.createTextMessage("Msg:1"));
 
-        // Send a new message.
-        producer.send(session.createTextMessage("Msg:2"));
-
         // Restart the broker.
         restartBroker();
 
+        producer.send(session.createTextMessage("Msg:2"));
+
         // Recreate the subscriber to check if it will be able to recover the messages
-        ACTIVEMQ_BROKER_URI = broker.getTransportConnectors().get(0).getPublishableConnectString();
-        connection = new ActiveMQConnectionFactory(ACTIVEMQ_BROKER_URI).createConnection();
-        connection.setClientID("cliId1");
         connection.start();
+        
         session = connection.createSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
         sub1 = session.createDurableSubscriber(topic, "sub1");
 
