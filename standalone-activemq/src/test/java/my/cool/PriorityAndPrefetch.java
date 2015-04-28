@@ -25,8 +25,6 @@ public class PriorityAndPrefetch extends TestCase {
     private String ACTIVEMQ_BROKER_URI;
 
     private ActiveMQConnectionFactory connectionFactory;
-    private Connection connection;
-    private Session session;
     private final Random pause = new Random();
 
     @Override
@@ -47,9 +45,6 @@ public class PriorityAndPrefetch extends TestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        connection.close();
-
-        brokerService.stop();
         brokerService.waitUntilStarted();
     }
 
@@ -58,10 +53,6 @@ public class PriorityAndPrefetch extends TestCase {
         int NUM_MESSAGES = 10;
         int EXPECTED_NUM_CONSUMER_LOW = 0;
         int EXPECTED_NUM_CONSUMER_HIGH= 0;
-
-        connection = connectionFactory.createConnection();
-        connection.start();
-        session = connection.createSession(false, ActiveMQSession.INDIVIDUAL_ACKNOWLEDGE);
 
         Queue queueLow = new ActiveMQQueue(getName() + "?consumer.priority=1");
         Queue queueHigh = new ActiveMQQueue(getName() + "?consumer.priority=2");
@@ -90,10 +81,6 @@ public class PriorityAndPrefetch extends TestCase {
         int EXPECTED_NUM_CONSUMER_LOW = 15;
         int EXPECTED_NUM_CONSUMER_HIGH= 5;
 
-        connection = connectionFactory.createConnection();
-        connection.start();
-        session = connection.createSession(false, ActiveMQSession.INDIVIDUAL_ACKNOWLEDGE);
-
         Queue queueLow  = new ActiveMQQueue(getName() + "?consumer.priority=1&consumer.prefetchSize=100");
         Queue queueHigh = new ActiveMQQueue(getName() + "?consumer.priority=2&consumer.prefetchSize=5");
         Queue queue = new ActiveMQQueue(getName());
@@ -103,13 +90,13 @@ public class PriorityAndPrefetch extends TestCase {
 
         ConsumerThread high = new ConsumerThread(EXPECTED_NUM_CONSUMER_HIGH, queueHigh);
         high.start();
+        
+        low.join();
+        high.join();
 
         ProducerThread p1 = new ProducerThread(NUM_MESSAGES, queue);
         p1.start();
         p1.join();
-        
-        low.join();
-        high.join();
 
         long resultLow = low.getCounter().addAndGet(0);
         long resultHigh = high.getCounter().addAndGet(0);
@@ -122,6 +109,7 @@ public class PriorityAndPrefetch extends TestCase {
 
         int NUM_MESSAGES;
         Destination destination;
+        Connection connection;
 
         public ProducerThread(int num_messages, Destination destination) {
             this.NUM_MESSAGES = num_messages;
@@ -130,6 +118,8 @@ public class PriorityAndPrefetch extends TestCase {
 
         public void run() {
             try {
+                connection = connectionFactory.createConnection();
+                connection.start();
                 Session session = connection.createSession(false, ActiveMQSession.INDIVIDUAL_ACKNOWLEDGE);
                 MessageProducer producer = session.createProducer(destination);
                 
@@ -139,6 +129,12 @@ public class PriorityAndPrefetch extends TestCase {
                 }
             } catch (Exception e) {
                 log.error("Caught an unexpected error: ", e);
+            } finally {
+                try {
+                    connection.close();
+                } catch (JMSException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -147,6 +143,7 @@ public class PriorityAndPrefetch extends TestCase {
 
         AtomicLong counter = new AtomicLong();
         Destination destination;
+        Connection connection;
         int NUM_MESSAGES;
 
         public ConsumerThread(int num_messages, Destination destination) {
@@ -157,6 +154,8 @@ public class PriorityAndPrefetch extends TestCase {
         @Override
         public void run() {
             try {
+                connection = connectionFactory.createConnection();
+                connection.start();
                 Session session = connection.createSession(false, ActiveMQSession.INDIVIDUAL_ACKNOWLEDGE);
                 MessageConsumer consumer = session.createConsumer(destination);
                 
@@ -166,6 +165,12 @@ public class PriorityAndPrefetch extends TestCase {
                 }
             } catch (Exception e) {
                 log.error("Caught an unexpected error: ", e);
+            } finally {
+                try {
+                    connection.close();
+                } catch (JMSException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
