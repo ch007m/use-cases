@@ -50,17 +50,12 @@ public class PriorityAndPrefetch extends TestCase {
     public void testTwoConsumersWithPriority1and2() throws Exception {
 
         int NUM_MESSAGES = 10;
-        int EXPECTED_NUM_CONSUMER_LOW = 0;
-        int EXPECTED_NUM_CONSUMER_HIGH= 0;
+        int EXPECTED_NUM_CONSUMER_HIGH= 10;
 
-        Queue queueLow = new ActiveMQQueue(getName() + "?consumer.priority=1");
         Queue queueHigh = new ActiveMQQueue(getName() + "?consumer.priority=2");
         Queue queue = new ActiveMQQueue(getName());
 
-        ConsumerThread low = new ConsumerThread(EXPECTED_NUM_CONSUMER_LOW, queueLow);
-        low.start();
-
-        ConsumerThread high = new ConsumerThread(EXPECTED_NUM_CONSUMER_LOW, queueHigh);
+        ConsumerThread high = new ConsumerThread(EXPECTED_NUM_CONSUMER_HIGH, queueHigh);
         high.start();
 
         ProducerThread p1 = new ProducerThread(NUM_MESSAGES, queue);
@@ -68,11 +63,9 @@ public class PriorityAndPrefetch extends TestCase {
         p1.join();
 
         Thread.sleep(500);
-        
-        long resultLow = low.getCounter().addAndGet(0);
+
         long resultHigh = high.getCounter().addAndGet(0);
 
-        assertEquals(EXPECTED_NUM_CONSUMER_LOW, resultLow);
         assertEquals(EXPECTED_NUM_CONSUMER_HIGH, resultHigh);
     }
 
