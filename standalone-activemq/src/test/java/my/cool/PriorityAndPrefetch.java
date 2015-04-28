@@ -1,19 +1,17 @@
 package my.cool;
 
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.jms.Connection;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
-import javax.jms.TextMessage;
+import javax.jms.*;
 
 import junit.framework.TestCase;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.ActiveMQSession;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.region.policy.PolicyEntry;
 import org.apache.activemq.broker.region.policy.PolicyMap;
@@ -25,24 +23,27 @@ import org.slf4j.LoggerFactory;
 public class PriorityAndPrefetch extends TestCase {
 
     private static final Logger log = LoggerFactory.getLogger(ConsumerThread.class);
+
     private BrokerService brokerService;
-    private ArrayList<Thread> threads = new ArrayList<Thread>();
 
     private final String ACTIVEMQ_BROKER_BIND = "tcp://localhost:0";
     private String ACTIVEMQ_BROKER_URI;
-    private String ACTIVEMQ_BROKER_URI_CONSUMER_1;
-    private String ACTIVEMQ_BROKER_URI_CONSUMER_2;
 
-    AtomicBoolean shutdown = new AtomicBoolean();
+    private ActiveMQConnectionFactory connectionFactory;
     private ActiveMQQueue destination;
+    private Connection connection;
+    private Session session;
+    private final Random pause = new Random();
+
+    private final AtomicLong totalConsumed = new AtomicLong();
 
     @Override
     protected void setUp() throws Exception {
         // Start an embedded broker up.
         brokerService = new BrokerService();
-        KahaDBStore adaptor = new KahaDBStore();
-        brokerService.setPersistenceAdapter(adaptor);
-        brokerService.deleteAllMessages();
+        brokerService.setPersistent(false);
+        brokerService.setUseJmx(false);
+        brokerService.setDeleteAllMessagesOnStartup(true);
 
         // A small max page size makes this issue occur faster.
         PolicyMap policyMap = new PolicyMap();
@@ -53,135 +54,129 @@ public class PriorityAndPrefetch extends TestCase {
 
         brokerService.addConnector(ACTIVEMQ_BROKER_BIND);
         brokerService.start();
+        brokerService.waitUntilStarted();
 
         ACTIVEMQ_BROKER_URI = brokerService.getTransportConnectors().get(0).getPublishableConnectString();
-        destination = new ActiveMQQueue(getName());
+        connectionFactory = new ActiveMQConnectionFactory(ACTIVEMQ_BROKER_URI);
     }
 
     @Override
     protected void tearDown() throws Exception {
-        // Stop any running threads.
-        shutdown.set(true);
-        for (Thread t : threads) {
-            t.interrupt();
-            t.join();
-        }
+        connection.close();
+
         brokerService.stop();
+        brokerService.waitUntilStarted();
     }
 
     public void testTwoConsumersWithPriority1and2() throws Exception {
-        ACTIVEMQ_BROKER_URI_CONSUMER_1 = ACTIVEMQ_BROKER_URI + "?consumer.priority=1";
-        ACTIVEMQ_BROKER_URI_CONSUMER_2 = ACTIVEMQ_BROKER_URI + "?consumer.priority=2";
+/*        ACTIVEMQ_BROKER_URI_CONSUMER_1 = ACTIVEMQ_BROKER_URI + "?consumer.priority=1";
+        ACTIVEMQ_BROKER_URI_CONSUMER_2 = ACTIVEMQ_BROKER_URI + "?consumer.priority=2";*/
         doTestConsumers();
     }
 
-/*        public void testTwoConsumersWithPriority1and2AndPrefetch() throws Exception {
-            doTestConsumers();
-        }*/
-
     public void doTestConsumers() throws Exception {
 
-        ConsumerThread c1 = new ConsumerThread(ACTIVEMQ_BROKER_URI_CONSUMER_1, "Consumer-1");
-        threads.add(c1);
+        connection = connectionFactory.createConnection();
+        connection.start();
+        session = connection.createSession(false, ActiveMQSession.INDIVIDUAL_ACKNOWLEDGE);
+
+        final int NUM_MESSAGES = 50;
+
+        log.info("Consumer queue 1 :" + getName() + "?consumer.priority=1");
+        log.info("Consumer queue 2 :" + getName() + "?consumer.priority=2");
+
+        Queue queue1 = new ActiveMQQueue(getName() + "?consumer.priority=1");
+        Queue queue2 = new ActiveMQQueue(getName() + "?consumer.priority=2");
+        Queue queue = new ActiveMQQueue(getName());
+
+        MessageConsumer consumer1 = session.createConsumer(queue1);
+        MessageConsumer consumer2 = session.createConsumer(queue2);
+        
+        final MessageProducer producer = session.createProducer(queue);
+
+        ConsumerThread c1 = new ConsumerThread(consumer1, NUM_MESSAGES);
         c1.start();
 
-        ConsumerThread c2 = new ConsumerThread(ACTIVEMQ_BROKER_URI_CONSUMER_2, "Consumer-2");
-        threads.add(c2);
+        ConsumerThread c2 = new ConsumerThread(consumer2, NUM_MESSAGES);
         c2.start();
 
-        ProducerThread p = new ProducerThread(50);
-        threads.add(p);
-        p.start();
+        /* DON't WORK as counter of c1, c2 = 0
+           ProducerThread p1 = new ProducerThread(producer, NUM_MESSAGES);
+           p1.start(); 
+         */
+        
+        Thread producerThread = new Thread(new Runnable() {
 
-        long c1Counter = c1.counter.getAndSet(0);
-        long c2Counter = c2.counter.getAndSet(0);
-        log.debug("c1: " + c1Counter + ", c2: " + c2Counter);
+            @Override
+            public void run() {
+                try {
+                    for (int i = 0; i < NUM_MESSAGES; ++i) {
+                        producer.send(session.createTextMessage("TEST"));
+                        TimeUnit.MILLISECONDS.sleep(pause.nextInt(10));
+                    }
+                } catch (Exception e) {
+                    log.error("Caught an unexpected error: ", e);
+                }
+            }
+        });
+        producerThread.start();
+        producerThread.join();
+        
+        long resultc1 = c1.getCounter().addAndGet(0);
+        long resultc2 = c2.getCounter().addAndGet(0);
 
-        //assertTrue("Total received=" + totalReceived + ", Consumer 2 should be receiving new messages every second.", c2Counter > 0);
-
+        assertEquals(0, resultc1);
+        assertEquals(50, resultc2);
     }
 
     public class ProducerThread extends Thread {
-        
+
         int NUM_MESSAGES;
-        
-        public ProducerThread(int num_messages) {
+        MessageProducer producer;
+
+        public ProducerThread(MessageProducer producer, int num_messages) {
             this.NUM_MESSAGES = num_messages;
+            this.producer = producer;
         }
 
         public void run() {
             try {
-                produce(this.NUM_MESSAGES);
-            } catch(Exception e) {
+                for (int i = 0; i < this.NUM_MESSAGES; ++i) {
+                    this.producer.send(session.createTextMessage("TEST"));
+                    TimeUnit.MILLISECONDS.sleep(pause.nextInt(10));
+                }
+            } catch (Exception e) {
                 log.error("Caught an unexpected error: ", e);
             }
         }
     }
-
-    public void produce(int count) throws Exception {
-        Connection connection = null;
-        try {
-            ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(ACTIVEMQ_BROKER_URI);
-            factory.setDispatchAsync(true);
-
-            connection = factory.createConnection();
-
-            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            MessageProducer producer = session.createProducer(destination);
-            connection.start();
-
-            for (int i = 0; i < count; i++) {
-                producer.send(session.createTextMessage(getName() + " Message " + (++i)));
-            }
-
-        } finally {
-            try {
-                connection.close();
-            } catch (Throwable e) {
-            }
-        }
-    }
-
+    
     public class ConsumerThread extends Thread {
-        final AtomicLong counter = new AtomicLong();
-        String URI;
 
-        public ConsumerThread(String URI, String threadId) {
-            super(threadId);
-            this.URI = URI;
+        AtomicLong counter = new AtomicLong();
+        MessageConsumer consumer;
+        int NUM_MESSAGES;
+
+        public ConsumerThread(MessageConsumer consumer, int num_messages) {
+            this.consumer = consumer;
+            this.NUM_MESSAGES = num_messages;
         }
 
+        @Override
         public void run() {
-            Connection connection = null;
             try {
-                log.debug(getName() + ": is running");
-
-                ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(this.URI);
-                factory.setDispatchAsync(true);
-
-                connection = factory.createConnection();
-
-                Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-                MessageConsumer consumer = session.createConsumer(destination);
-                connection.start();
-
-                while (!shutdown.get()) {
-                    TextMessage msg = (TextMessage) consumer.receive(1000);
-                        if ( msg!=null ) {
-                            counter.incrementAndGet();
-                        }
+                while (totalConsumed.get() < NUM_MESSAGES) {
+                    Message message = consumer.receive();
+                    counter.incrementAndGet();
                 }
-
             } catch (Exception e) {
-            } finally {
-                log.debug(getName() + ": is stopping");
-                try {
-                    connection.close();
-                } catch (Throwable e) {
-                }
+                log.error("Caught an unexpected error: ", e);
             }
         }
 
+        public AtomicLong getCounter() {
+            return counter;
+        }
     }
 
 }
