@@ -22,13 +22,19 @@ public class RetroactiveConsumer extends TestCase {
     private static final Logger log = LoggerFactory.getLogger(RetroactiveConsumer.class);
 
     private BrokerService broker;
-    private final static String ACTIVEMQ_BROKER_URI = "tcp://localhost:62626";
+/*    private final static String URI = "tcp://localhost:62626";*/
+    private final static String URI = "vm://durable-broker";
+    
+    private final static String ACTIVEMQ_BROKER_URI = URI;
 
-    private final String ACTIVEMQ_BROKER_BIND = "tcp://localhost:62626";
+    private final String ACTIVEMQ_BROKER_BIND = URI;
+
+    Connection connection;
 
     @Override
     protected void setUp() throws Exception {
         createBroker();
+        connection = getConnection();
     }
 
     @Override
@@ -36,8 +42,18 @@ public class RetroactiveConsumer extends TestCase {
         broker.stop();
     }
 
+    protected ActiveMQConnectionFactory createConnectionFactory() throws Exception {
+        return new ActiveMQConnectionFactory(URI);
+    }
+    
     protected void restartBroker() throws Exception {
-        broker.stop();
+        if (connection != null) {
+            connection.close();
+        }
+        if (broker != null) {
+            broker.stop();
+            broker.waitUntilStopped();
+        }
         createRestartedBroker();
     }
 
@@ -83,15 +99,14 @@ public class RetroactiveConsumer extends TestCase {
         return adapter;
     }
     
-    private static Connection getConnection() throws JMSException{
-        Connection connection = new ActiveMQConnectionFactory(ACTIVEMQ_BROKER_URI).createConnection();
+    private Connection getConnection() throws Exception {
+        Connection connection = createConnectionFactory().createConnection();
         connection.setClientID("cliId1");
         return connection;
     }
 
     public void testFixedRecoveryPolicy() throws Exception {
         
-        Connection connection = getConnection();
         connection.start();
 
         // Create the durable sub.
@@ -111,12 +126,11 @@ public class RetroactiveConsumer extends TestCase {
         // Restart the broker.
         restartBroker();
 
+        connection.start();
+        session = connection.createSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
         producer.send(session.createTextMessage("Msg:2"));
 
         // Recreate the subscriber to check if it will be able to recover the messages
-        connection.start();
-        
-        session = connection.createSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
         sub1 = session.createDurableSubscriber(topic, "sub1");
 
         // Try to get the message.
