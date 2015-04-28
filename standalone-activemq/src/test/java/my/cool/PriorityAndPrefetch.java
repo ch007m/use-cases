@@ -37,9 +37,6 @@ public class PriorityAndPrefetch extends TestCase {
         brokerService.addConnector(ACTIVEMQ_BROKER_BIND);
         brokerService.start();
         brokerService.waitUntilStarted();
-
-        ACTIVEMQ_BROKER_URI = brokerService.getTransportConnectors().get(0).getPublishableConnectString();
-        connectionFactory = new ActiveMQConnectionFactory(ACTIVEMQ_BROKER_URI);
     }
 
     @Override
@@ -55,10 +52,17 @@ public class PriorityAndPrefetch extends TestCase {
         Queue queueHigh = new ActiveMQQueue(getName() + "?consumer.priority=2");
         Queue queue = new ActiveMQQueue(getName());
 
-        ConsumerThread high = new ConsumerThread(EXPECTED_NUM_CONSUMER_HIGH, queueHigh);
+        ACTIVEMQ_BROKER_URI = brokerService.getTransportConnectors().get(0).getPublishableConnectString();
+        Connection connection = new ActiveMQConnectionFactory(ACTIVEMQ_BROKER_URI).createConnection();
+        connection.start();
+        
+        Session sessionProducer = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Session sessionConsumerHigh = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+        ConsumerThread high = new ConsumerThread(EXPECTED_NUM_CONSUMER_HIGH, sessionConsumerHigh, queueHigh);
         high.start();
 
-        ProducerThread p1 = new ProducerThread(NUM_MESSAGES, queue);
+        ProducerThread p1 = new ProducerThread(NUM_MESSAGES, sessionProducer, queue);
         p1.start();
         p1.join();
 
@@ -67,6 +71,8 @@ public class PriorityAndPrefetch extends TestCase {
         long resultHigh = high.getCounter().addAndGet(0);
 
         assertEquals(EXPECTED_NUM_CONSUMER_HIGH, resultHigh);
+        
+        connection.close();
     }
 
     public void testTwoConsumersWithPriority1and2AndPrefetchSize5() throws Exception {
@@ -79,16 +85,24 @@ public class PriorityAndPrefetch extends TestCase {
         Queue queueHigh = new ActiveMQQueue(getName() + "?consumer.priority=2&consumer.prefetchSize=5");
         Queue queue = new ActiveMQQueue(getName());
 
-        ConsumerThread low = new ConsumerThread(EXPECTED_NUM_CONSUMER_LOW, queueLow);
+        ACTIVEMQ_BROKER_URI = brokerService.getTransportConnectors().get(0).getPublishableConnectString();
+        Connection connection = new ActiveMQConnectionFactory(ACTIVEMQ_BROKER_URI).createConnection();
+        connection.start();
+
+        Session sessionProducer = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Session sessionConsumerHigh = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Session sessionConsumerLow = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+        ConsumerThread low = new ConsumerThread(EXPECTED_NUM_CONSUMER_LOW, sessionConsumerLow, queueLow);
         low.start();
 
-        ConsumerThread high = new ConsumerThread(EXPECTED_NUM_CONSUMER_HIGH, queueHigh);
+        ConsumerThread high = new ConsumerThread(EXPECTED_NUM_CONSUMER_HIGH, sessionConsumerHigh, queueHigh);
         high.start();
         
         low.join();
         high.join();
 
-        ProducerThread p1 = new ProducerThread(NUM_MESSAGES, queue);
+        ProducerThread p1 = new ProducerThread(NUM_MESSAGES, sessionProducer, queue);
         p1.start();
         p1.join();
 
@@ -99,37 +113,35 @@ public class PriorityAndPrefetch extends TestCase {
 
         assertEquals(EXPECTED_NUM_CONSUMER_LOW, resultLow);
         assertEquals(EXPECTED_NUM_CONSUMER_HIGH, resultHigh);
+        
+        connection.close();
     }
 
     public class ProducerThread extends Thread {
 
         int NUM_MESSAGES;
         Destination destination;
-        Connection connection;
+        Session session;
+        MessageProducer producer;
 
-        public ProducerThread(int num_messages, Destination destination) {
+        public ProducerThread(int num_messages, Session session, Destination destination) {
             this.NUM_MESSAGES = num_messages;
+            this.session = session;
             this.destination = destination;
         }
 
         public void run() {
             try {
-                connection = connectionFactory.createConnection();
-                connection.start();
-                Session session = connection.createSession(false, ActiveMQSession.INDIVIDUAL_ACKNOWLEDGE);
-                MessageProducer producer = session.createProducer(destination);
+                producer = session.createProducer(destination);
 
                 for (int i = 0; i < this.NUM_MESSAGES; ++i) {
                     producer.send(session.createTextMessage("TEST"));
                 }
-
-                connection.stop();
-                
             } catch (Exception e) {
                 log.error("Caught an unexpected error: ", e);
             } finally {
                 try {
-                    connection.close();
+                    producer.close();
                 } catch (JMSException e) {
                     e.printStackTrace();
                 }
@@ -141,33 +153,31 @@ public class PriorityAndPrefetch extends TestCase {
 
         AtomicLong counter = new AtomicLong();
         Destination destination;
-        Connection connection;
+        Session session;
+        MessageConsumer consumer;
         int NUM_MESSAGES;
 
-        public ConsumerThread(int num_messages, Destination destination) {
+        public ConsumerThread(int num_messages, Session session, Destination destination) {
             this.NUM_MESSAGES = num_messages;
+            this.session = session;
             this.destination = destination;
         }
 
         @Override
         public void run() {
             try {
-                connection = connectionFactory.createConnection();
-                connection.start();
-                Session session = connection.createSession(false, ActiveMQSession.INDIVIDUAL_ACKNOWLEDGE);
-                MessageConsumer consumer = session.createConsumer(destination);
+                consumer = session.createConsumer(destination);
                 
                 while (counter.get() < NUM_MESSAGES) {
                     Message message = consumer.receive(100);
                     counter.incrementAndGet();
                 }
                 
-                connection.stop();
             } catch (Exception e) {
                 log.error("Caught an unexpected error: ", e);
             } finally {
                 try {
-                    connection.close();
+                    consumer.close();
                 } catch (JMSException e) {
                     e.printStackTrace();
                 }
