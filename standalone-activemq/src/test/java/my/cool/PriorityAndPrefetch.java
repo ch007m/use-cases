@@ -11,8 +11,6 @@ import junit.framework.TestCase;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQSession;
 import org.apache.activemq.broker.BrokerService;
-import org.apache.activemq.broker.region.policy.PolicyEntry;
-import org.apache.activemq.broker.region.policy.PolicyMap;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +25,6 @@ public class PriorityAndPrefetch extends TestCase {
     private String ACTIVEMQ_BROKER_URI;
 
     private ActiveMQConnectionFactory connectionFactory;
-    private ActiveMQQueue destination;
     private Connection connection;
     private Session session;
     private final Random pause = new Random();
@@ -39,12 +36,6 @@ public class PriorityAndPrefetch extends TestCase {
         brokerService.setPersistent(false);
         brokerService.setUseJmx(false);
         brokerService.setDeleteAllMessagesOnStartup(true);
-
-/*        PolicyMap policyMap = new PolicyMap();
-        PolicyEntry pe = new PolicyEntry();
-        pe.setQueuePrefetch(5);
-        policyMap.put(new ActiveMQQueue(">"), pe);
-        brokerService.setDestinationPolicy(policyMap);*/
 
         brokerService.addConnector(ACTIVEMQ_BROKER_BIND);
         brokerService.start();
@@ -65,61 +56,55 @@ public class PriorityAndPrefetch extends TestCase {
     public void testTwoConsumersWithPriority1and2() throws Exception {
 
         int NUM_MESSAGES = 10;
+        int EXPECTED_NUM_CONSUMER_LOW = 0;
+        int EXPECTED_NUM_CONSUMER_HIGH= 0;
 
         connection = connectionFactory.createConnection();
         connection.start();
         session = connection.createSession(false, ActiveMQSession.INDIVIDUAL_ACKNOWLEDGE);
 
-        Queue queue1 = new ActiveMQQueue(getName() + "?consumer.priority=1");
-        Queue queue2 = new ActiveMQQueue(getName() + "?consumer.priority=2");
+        Queue queueLow = new ActiveMQQueue(getName() + "?consumer.priority=1");
+        Queue queueHigh = new ActiveMQQueue(getName() + "?consumer.priority=2");
         Queue queue = new ActiveMQQueue(getName());
 
-        MessageConsumer lowPriority = session.createConsumer(queue1);
-        MessageConsumer highPriority = session.createConsumer(queue2);
-
-        final MessageProducer producer = session.createProducer(queue);
-
-        ConsumerThread low = new ConsumerThread(lowPriority, 0);
+        ConsumerThread low = new ConsumerThread(EXPECTED_NUM_CONSUMER_LOW, queueLow);
         low.start();
 
-        ConsumerThread high = new ConsumerThread(highPriority, 10);
+        ConsumerThread high = new ConsumerThread(EXPECTED_NUM_CONSUMER_LOW, queueHigh);
         high.start();
 
-        ProducerThread p1 = new ProducerThread(producer, NUM_MESSAGES);
+        ProducerThread p1 = new ProducerThread(NUM_MESSAGES, queue);
         p1.start();
         p1.join();
         
         long resultLow = low.getCounter().addAndGet(0);
         long resultHigh = high.getCounter().addAndGet(0);
 
-        assertEquals(0, resultLow);
-        assertEquals(10, resultHigh);
+        assertEquals(EXPECTED_NUM_CONSUMER_LOW, resultLow);
+        assertEquals(EXPECTED_NUM_CONSUMER_HIGH, resultHigh);
     }
 
     public void testTwoConsumersWithPriority1and2AndPrefetchSize5() throws Exception {
 
         int NUM_MESSAGES = 20;
+        int EXPECTED_NUM_CONSUMER_LOW = 15;
+        int EXPECTED_NUM_CONSUMER_HIGH= 5;
 
         connection = connectionFactory.createConnection();
         connection.start();
         session = connection.createSession(false, ActiveMQSession.INDIVIDUAL_ACKNOWLEDGE);
 
-        Queue queue1 = new ActiveMQQueue(getName() + "?consumer.priority=1&consumer.prefetchSize=100");
-        Queue queue2 = new ActiveMQQueue(getName() + "?consumer.priority=2&consumer.prefetchSize=5");
+        Queue queueLow  = new ActiveMQQueue(getName() + "?consumer.priority=1&consumer.prefetchSize=100");
+        Queue queueHigh = new ActiveMQQueue(getName() + "?consumer.priority=2&consumer.prefetchSize=5");
         Queue queue = new ActiveMQQueue(getName());
 
-        MessageConsumer lowPriority = session.createConsumer(queue1);
-        MessageConsumer highPriority = session.createConsumer(queue2);
-
-        final MessageProducer producer = session.createProducer(queue);
-
-        ConsumerThread low = new ConsumerThread(lowPriority, 15);
+        ConsumerThread low = new ConsumerThread(EXPECTED_NUM_CONSUMER_LOW, queueLow);
         low.start();
 
-        ConsumerThread high = new ConsumerThread(highPriority, 5);
+        ConsumerThread high = new ConsumerThread(EXPECTED_NUM_CONSUMER_HIGH, queueHigh);
         high.start();
 
-        ProducerThread p1 = new ProducerThread(producer, NUM_MESSAGES);
+        ProducerThread p1 = new ProducerThread(NUM_MESSAGES, queue);
         p1.start();
         p1.join();
         
@@ -129,24 +114,27 @@ public class PriorityAndPrefetch extends TestCase {
         long resultLow = low.getCounter().addAndGet(0);
         long resultHigh = high.getCounter().addAndGet(0);
 
-        assertEquals(15, resultLow);
-        assertEquals(5, resultHigh);
+        assertEquals(EXPECTED_NUM_CONSUMER_LOW, resultLow);
+        assertEquals(EXPECTED_NUM_CONSUMER_HIGH, resultHigh);
     }
 
     public class ProducerThread extends Thread {
 
         int NUM_MESSAGES;
-        MessageProducer producer;
+        Destination destination;
 
-        public ProducerThread(MessageProducer producer, int num_messages) {
+        public ProducerThread(int num_messages, Destination destination) {
             this.NUM_MESSAGES = num_messages;
-            this.producer = producer;
+            this.destination = destination;
         }
 
         public void run() {
             try {
+                Session session = connection.createSession(false, ActiveMQSession.INDIVIDUAL_ACKNOWLEDGE);
+                MessageProducer producer = session.createProducer(destination);
+                
                 for (int i = 0; i < this.NUM_MESSAGES; ++i) {
-                    this.producer.send(session.createTextMessage("TEST"));
+                    producer.send(session.createTextMessage("TEST"));
                     TimeUnit.MILLISECONDS.sleep(pause.nextInt(10));
                 }
             } catch (Exception e) {
@@ -158,17 +146,20 @@ public class PriorityAndPrefetch extends TestCase {
     public class ConsumerThread extends Thread {
 
         AtomicLong counter = new AtomicLong();
-        MessageConsumer consumer;
+        Destination destination;
         int NUM_MESSAGES;
 
-        public ConsumerThread(MessageConsumer consumer, int num_messages) {
-            this.consumer = consumer;
+        public ConsumerThread(int num_messages, Destination destination) {
             this.NUM_MESSAGES = num_messages;
+            this.destination = destination;
         }
 
         @Override
         public void run() {
             try {
+                Session session = connection.createSession(false, ActiveMQSession.INDIVIDUAL_ACKNOWLEDGE);
+                MessageConsumer consumer = session.createConsumer(destination);
+                
                 while (counter.get() < NUM_MESSAGES) {
                     Message message = consumer.receive(100);
                     counter.incrementAndGet();
