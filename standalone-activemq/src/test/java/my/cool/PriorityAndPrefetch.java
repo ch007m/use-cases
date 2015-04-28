@@ -69,12 +69,6 @@ public class PriorityAndPrefetch extends TestCase {
     }
 
     public void testTwoConsumersWithPriority1and2() throws Exception {
-/*        ACTIVEMQ_BROKER_URI_CONSUMER_1 = ACTIVEMQ_BROKER_URI + "?consumer.priority=1";
-        ACTIVEMQ_BROKER_URI_CONSUMER_2 = ACTIVEMQ_BROKER_URI + "?consumer.priority=2";*/
-        doTestConsumers();
-    }
-
-    public void doTestConsumers() throws Exception {
 
         connection = connectionFactory.createConnection();
         connection.start();
