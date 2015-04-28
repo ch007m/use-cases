@@ -25,7 +25,6 @@ public class PriorityAndPrefetch extends TestCase {
     private String ACTIVEMQ_BROKER_URI;
 
     private ActiveMQConnectionFactory connectionFactory;
-    private final Random pause = new Random();
 
     @Override
     protected void setUp() throws Exception {
@@ -125,7 +124,6 @@ public class PriorityAndPrefetch extends TestCase {
                 
                 for (int i = 0; i < this.NUM_MESSAGES; ++i) {
                     producer.send(session.createTextMessage("TEST"));
-                    TimeUnit.MILLISECONDS.sleep(pause.nextInt(10));
                 }
             } catch (Exception e) {
                 log.error("Caught an unexpected error: ", e);
