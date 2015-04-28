@@ -21,7 +21,7 @@ public class RetroactiveConsumer extends TestCase {
     private BrokerService broker;
     private final static String BROKER_URI = "tcp://localhost:62626";
 /*    private final static String URI = "vm://durable-broker";*/
-    
+
     private final static String ACTIVEMQ_BROKER_URI = BROKER_URI;
 
     private final String ACTIVEMQ_BROKER_BIND = BROKER_URI;
@@ -43,7 +43,7 @@ public class RetroactiveConsumer extends TestCase {
         return new ActiveMQConnectionFactory(BROKER_URI);
     }
     
-/*    protected void restartBroker() throws Exception {
+    protected void restartBroker() throws Exception {
         if (connection != null) {
             connection.close();
         }
@@ -52,17 +52,17 @@ public class RetroactiveConsumer extends TestCase {
             broker.waitUntilStopped();
         }
         createRestartedBroker();
-    }*/
+    }
 
     private void createBroker() throws Exception {
         PolicyEntry policy = new PolicyEntry();
         policy.setTopic(">");
         policy.setDispatchPolicy(new SimpleDispatchPolicy());
-        policy.setSubscriptionRecoveryPolicy(new NoSubscriptionRecoveryPolicy());
+        policy.setSubscriptionRecoveryPolicy(new FixedCountSubscriptionRecoveryPolicy());
         /* new FixedCountSubscriptionRecoveryPolicy() */
         PolicyMap policyMap = new PolicyMap();
         policyMap.setDefaultEntry(policy);
-        
+
         broker = new BrokerService();
         broker.setBrokerName("durable-broker");
         broker.setDeleteAllMessagesOnStartup(true);
@@ -75,21 +75,26 @@ public class RetroactiveConsumer extends TestCase {
         broker.waitUntilStarted();
     }
 
-/*    private void createRestartedBroker() throws Exception {
+    private void createRestartedBroker() throws Exception {
         PolicyEntry policy = new PolicyEntry();
+        policy.setTopic(">");
         policy.setDispatchPolicy(new SimpleDispatchPolicy());
         policy.setSubscriptionRecoveryPolicy(new FixedCountSubscriptionRecoveryPolicy());
-        PolicyMap pMap = new PolicyMap();
-        pMap.setDefaultEntry(policy);
-        
+        /* new FixedCountSubscriptionRecoveryPolicy() */
+        PolicyMap policyMap = new PolicyMap();
+        policyMap.setDefaultEntry(policy);
+
         broker = new BrokerService();
         broker.setBrokerName("durable-broker");
         broker.setDeleteAllMessagesOnStartup(false);
         broker.setPersistenceAdapter(createPersistenceAdapter());
         broker.setPersistent(true);
+        broker.setDestinationPolicy(policyMap);
+
+        broker.addConnector(ACTIVEMQ_BROKER_BIND);
         broker.start();
         broker.waitUntilStarted();
-    }*/
+    }
 
     protected PersistenceAdapter createPersistenceAdapter() throws Exception {
         KahaDBPersistenceAdapter adapter = new KahaDBPersistenceAdapter();
@@ -98,7 +103,7 @@ public class RetroactiveConsumer extends TestCase {
         adapter.deleteAllMessages();
         return adapter;
     }
-    
+
     private Connection getConnection() throws Exception {
         Connection connection = createConnectionFactory().createConnection();
         connection.setClientID("cliId1");
@@ -106,7 +111,7 @@ public class RetroactiveConsumer extends TestCase {
     }
 
     public void testFixedRecoveryPolicy() throws Exception {
-        
+
         connection.start();
 
         // Create the durable sub.
@@ -119,28 +124,26 @@ public class RetroactiveConsumer extends TestCase {
 
         // Produce a message
         MessageProducer producer = session.createProducer(topic);
-        producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+        producer.setDeliveryMode(DeliveryMode.PERSISTENT);
 
         // Make sure it works when the durable sub is active.
         producer.send(session.createTextMessage("Msg:1"));
-
-        // Close session/connection
-        session.close();
-        connection.close();
         
+        restartBroker();
+
         connection = getConnection();
         connection.start();
         session = connection.createSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
         producer = session.createProducer(topic);
-        producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+        producer.setDeliveryMode(DeliveryMode.PERSISTENT);
         producer.send(session.createTextMessage("Msg:2"));
 
         // Recreate the subscriber to check if it will be able to recover the messages
         sub1 = session.createDurableSubscriber(topicSub, "sub1");
 
-        // Try to get the message.
-        assertTextMessageEquals("Msg:1", sub1.receive(5000));
-        assertTextMessageEquals("Msg:2", sub1.receive(5000));
+        // Try to get the messages
+        assertTextMessageEquals("Msg:2", sub1.receive(1000));
+        assertTextMessageEquals("Msg:1", sub1.receive(1000));
     }
 
     private void assertTextMessageEquals(String string, Message message) throws JMSException {
