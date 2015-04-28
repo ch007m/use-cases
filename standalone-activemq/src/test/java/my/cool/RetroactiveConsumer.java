@@ -113,8 +113,9 @@ public class RetroactiveConsumer extends TestCase {
         Session session = connection.createSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
 
         // Ensure that consumer will receive messages sent before it was created
-        Topic topic = session.createTopic("TestTopic?consumer.retroactive=true");
-        TopicSubscriber sub1 = session.createDurableSubscriber(topic, "sub1");
+        Topic topicSub = session.createTopic("TestTopic?consumer.retroactive=true");
+        Topic topic = session.createTopic("TestTopic");
+        TopicSubscriber sub1 = session.createDurableSubscriber(topicSub, "sub1");
 
         // Produce a message
         MessageProducer producer = session.createProducer(topic);
