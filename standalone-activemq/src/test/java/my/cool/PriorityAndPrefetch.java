@@ -121,25 +121,20 @@ public class PriorityAndPrefetch extends TestCase {
         connection.start();
         session = connection.createSession(false, ActiveMQSession.INDIVIDUAL_ACKNOWLEDGE);
 
-        Queue queue1 = new ActiveMQQueue(getName() + "?consumer.priority=1&consumer.prefetchSize=5");
+        Queue queue1 = new ActiveMQQueue(getName() + "?consumer.priority=1&consumer.prefetchSize=45");
         Queue queue2 = new ActiveMQQueue(getName() + "?consumer.priority=2&consumer.prefetchSize=5");
         Queue queue = new ActiveMQQueue(getName());
 
-        MessageConsumer consumer1 = session.createConsumer(queue1);
-        MessageConsumer consumer2 = session.createConsumer(queue2);
+        MessageConsumer lowPriority = session.createConsumer(queue1);
+        MessageConsumer highPriority = session.createConsumer(queue2);
 
         final MessageProducer producer = session.createProducer(queue);
 
-        ConsumerThread c1 = new ConsumerThread(consumer1, NUM_MESSAGES);
-        c1.start();
+        ConsumerThread low = new ConsumerThread(lowPriority, NUM_MESSAGES);
+        low.start();
 
-        ConsumerThread c2 = new ConsumerThread(consumer2, NUM_MESSAGES);
-        c2.start();
-
-        /* DON't WORK as counter of c1, c2 = 0
-           ProducerThread p1 = new ProducerThread(producer, NUM_MESSAGES);
-           p1.start();
-         */
+        ConsumerThread high = new ConsumerThread(highPriority, NUM_MESSAGES);
+        high.start();
 
         Thread producerThread = new Thread(new Runnable() {
 
@@ -158,11 +153,11 @@ public class PriorityAndPrefetch extends TestCase {
         producerThread.start();
         producerThread.join();
 
-        long resultc1 = c1.getCounter().addAndGet(0);
-        long resultc2 = c2.getCounter().addAndGet(0);
+        long resultLow = low.getCounter().addAndGet(0);
+        long resultHigh = high.getCounter().addAndGet(0);
 
-        assertEquals(0, resultc1);
-        assertEquals(50, resultc2);
+        assertEquals(45, resultLow);
+        assertEquals(5, resultHigh);
     }
 
     public class ProducerThread extends Thread {
