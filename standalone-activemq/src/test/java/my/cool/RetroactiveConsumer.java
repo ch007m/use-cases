@@ -56,17 +56,19 @@ public class RetroactiveConsumer extends TestCase {
 
     private void createBroker() throws Exception {
         PolicyEntry policy = new PolicyEntry();
+        policy.setTopic(">");
         policy.setDispatchPolicy(new SimpleDispatchPolicy());
         policy.setSubscriptionRecoveryPolicy(new NoSubscriptionRecoveryPolicy());
         /* new FixedCountSubscriptionRecoveryPolicy() */
-        PolicyMap pMap = new PolicyMap();
-        pMap.setDefaultEntry(policy);
+        PolicyMap policyMap = new PolicyMap();
+        policyMap.setDefaultEntry(policy);
         
         broker = new BrokerService();
         broker.setBrokerName("durable-broker");
         broker.setDeleteAllMessagesOnStartup(true);
         broker.setPersistenceAdapter(createPersistenceAdapter());
         broker.setPersistent(true);
+        broker.setDestinationPolicy(policyMap);
 
         broker.addConnector(ACTIVEMQ_BROKER_BIND);
         broker.start();
