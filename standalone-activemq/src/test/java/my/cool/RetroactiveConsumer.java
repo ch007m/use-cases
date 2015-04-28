@@ -3,10 +3,7 @@ package my.cool;
 import junit.framework.TestCase;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
-import org.apache.activemq.broker.region.policy.FixedCountSubscriptionRecoveryPolicy;
-import org.apache.activemq.broker.region.policy.PolicyEntry;
-import org.apache.activemq.broker.region.policy.PolicyMap;
-import org.apache.activemq.broker.region.policy.SimpleDispatchPolicy;
+import org.apache.activemq.broker.region.policy.*;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.store.PersistenceAdapter;
 import org.apache.activemq.store.kahadb.KahaDBPersistenceAdapter;
@@ -22,12 +19,12 @@ public class RetroactiveConsumer extends TestCase {
     private static final Logger log = LoggerFactory.getLogger(RetroactiveConsumer.class);
 
     private BrokerService broker;
-/*    private final static String URI = "tcp://localhost:62626";*/
-    private final static String URI = "vm://durable-broker";
+    private final static String BROKER_URI = "tcp://localhost:62626";
+/*    private final static String URI = "vm://durable-broker";*/
     
-    private final static String ACTIVEMQ_BROKER_URI = URI;
+    private final static String ACTIVEMQ_BROKER_URI = BROKER_URI;
 
-    private final String ACTIVEMQ_BROKER_BIND = URI;
+    private final String ACTIVEMQ_BROKER_BIND = BROKER_URI;
 
     Connection connection;
 
@@ -43,10 +40,10 @@ public class RetroactiveConsumer extends TestCase {
     }
 
     protected ActiveMQConnectionFactory createConnectionFactory() throws Exception {
-        return new ActiveMQConnectionFactory(URI);
+        return new ActiveMQConnectionFactory(BROKER_URI);
     }
     
-    protected void restartBroker() throws Exception {
+/*    protected void restartBroker() throws Exception {
         if (connection != null) {
             connection.close();
         }
@@ -55,12 +52,13 @@ public class RetroactiveConsumer extends TestCase {
             broker.waitUntilStopped();
         }
         createRestartedBroker();
-    }
+    }*/
 
     private void createBroker() throws Exception {
         PolicyEntry policy = new PolicyEntry();
         policy.setDispatchPolicy(new SimpleDispatchPolicy());
-        policy.setSubscriptionRecoveryPolicy(new FixedCountSubscriptionRecoveryPolicy());
+        policy.setSubscriptionRecoveryPolicy(new NoSubscriptionRecoveryPolicy());
+        /* new FixedCountSubscriptionRecoveryPolicy() */
         PolicyMap pMap = new PolicyMap();
         pMap.setDefaultEntry(policy);
         
@@ -75,7 +73,7 @@ public class RetroactiveConsumer extends TestCase {
         broker.waitUntilStarted();
     }
 
-    private void createRestartedBroker() throws Exception {
+/*    private void createRestartedBroker() throws Exception {
         PolicyEntry policy = new PolicyEntry();
         policy.setDispatchPolicy(new SimpleDispatchPolicy());
         policy.setSubscriptionRecoveryPolicy(new FixedCountSubscriptionRecoveryPolicy());
@@ -89,7 +87,7 @@ public class RetroactiveConsumer extends TestCase {
         broker.setPersistent(true);
         broker.start();
         broker.waitUntilStarted();
-    }
+    }*/
 
     protected PersistenceAdapter createPersistenceAdapter() throws Exception {
         KahaDBPersistenceAdapter adapter = new KahaDBPersistenceAdapter();
@@ -118,16 +116,20 @@ public class RetroactiveConsumer extends TestCase {
 
         // Produce a message
         MessageProducer producer = session.createProducer(topic);
-        producer.setDeliveryMode(DeliveryMode.PERSISTENT);
+        producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 
         // Make sure it works when the durable sub is active.
         producer.send(session.createTextMessage("Msg:1"));
 
-        // Restart the broker.
-        restartBroker();
-
+        // Close session/connection
+        session.close();
+        connection.close();
+        
+        connection = getConnection();
         connection.start();
         session = connection.createSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
+        producer = session.createProducer(topic);
+        producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
         producer.send(session.createTextMessage("Msg:2"));
 
         // Recreate the subscriber to check if it will be able to recover the messages
