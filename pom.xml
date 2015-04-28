@@ -25,6 +25,7 @@
 
     <modules>
         <module>simplejava</module>
+        <module>standalone-activemq</module>
         <module>demo-camel-quartz</module>
         <module>demo-camel-jsonpath</module>
         <module>demo-camel-standalone</module>

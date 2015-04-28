@@ -1,4 +1,4 @@
-package my.dabou;
+package my.cool;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
