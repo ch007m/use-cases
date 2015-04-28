@@ -136,7 +136,7 @@ public class RetroactiveConsumer extends TestCase {
         producer.send(session.createTextMessage("Msg:2"));
 
         // Recreate the subscriber to check if it will be able to recover the messages
-        sub1 = session.createDurableSubscriber(topic, "sub1");
+        sub1 = session.createDurableSubscriber(topicSub, "sub1");
 
         // Try to get the message.
         assertTextMessageEquals("Msg:1", sub1.receive(5000));
