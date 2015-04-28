@@ -31,9 +31,6 @@ public class PriorityAndPrefetch extends TestCase {
     private Connection connection;
     private Session session;
     private final Random pause = new Random();
-    int NUM_MESSAGES = 5;
-
-    private final AtomicLong totalConsumed = new AtomicLong();
 
     @Override
     protected void setUp() throws Exception {
@@ -67,6 +64,8 @@ public class PriorityAndPrefetch extends TestCase {
 
     public void testTwoConsumersWithPriority1and2() throws Exception {
 
+        int NUM_MESSAGES = 10;
+
         connection = connectionFactory.createConnection();
         connection.start();
         session = connection.createSession(false, ActiveMQSession.INDIVIDUAL_ACKNOWLEDGE);
@@ -83,7 +82,7 @@ public class PriorityAndPrefetch extends TestCase {
         ConsumerThread low = new ConsumerThread(lowPriority, 0);
         low.start();
 
-        ConsumerThread high = new ConsumerThread(highPriority, 5);
+        ConsumerThread high = new ConsumerThread(highPriority, 10);
         high.start();
 
         ProducerThread p1 = new ProducerThread(producer, NUM_MESSAGES);
@@ -94,16 +93,18 @@ public class PriorityAndPrefetch extends TestCase {
         long resultHigh = high.getCounter().addAndGet(0);
 
         assertEquals(0, resultLow);
-        assertEquals(5, resultHigh);
+        assertEquals(10, resultHigh);
     }
 
     public void testTwoConsumersWithPriority1and2AndPrefetchSize5() throws Exception {
+
+        int NUM_MESSAGES = 20;
 
         connection = connectionFactory.createConnection();
         connection.start();
         session = connection.createSession(false, ActiveMQSession.INDIVIDUAL_ACKNOWLEDGE);
 
-        Queue queue1 = new ActiveMQQueue(getName() + "?consumer.priority=1&consumer.prefetchSize=45");
+        Queue queue1 = new ActiveMQQueue(getName() + "?consumer.priority=1&consumer.prefetchSize=100");
         Queue queue2 = new ActiveMQQueue(getName() + "?consumer.priority=2&consumer.prefetchSize=5");
         Queue queue = new ActiveMQQueue(getName());
 
@@ -112,33 +113,20 @@ public class PriorityAndPrefetch extends TestCase {
 
         final MessageProducer producer = session.createProducer(queue);
 
-        ConsumerThread low = new ConsumerThread(lowPriority, NUM_MESSAGES);
+        ConsumerThread low = new ConsumerThread(lowPriority, 15);
         low.start();
 
-        ConsumerThread high = new ConsumerThread(highPriority, NUM_MESSAGES);
+        ConsumerThread high = new ConsumerThread(highPriority, 5);
         high.start();
 
-        Thread producerThread = new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                try {
-                    for (int i = 0; i < NUM_MESSAGES; ++i) {
-                        producer.send(session.createTextMessage("TEST"));
-                        TimeUnit.MILLISECONDS.sleep(pause.nextInt(10));
-                    }
-                } catch (Exception e) {
-                    log.error("Caught an unexpected error: ", e);
-                }
-            }
-        });
-        producerThread.start();
-        producerThread.join();
+        ProducerThread p1 = new ProducerThread(producer, NUM_MESSAGES);
+        p1.start();
+        p1.join();
 
         long resultLow = low.getCounter().addAndGet(0);
         long resultHigh = high.getCounter().addAndGet(0);
 
-        assertEquals(45, resultLow);
+        assertEquals(15, resultLow);
         assertEquals(5, resultHigh);
     }
 
@@ -179,7 +167,7 @@ public class PriorityAndPrefetch extends TestCase {
         public void run() {
             try {
                 while (counter.get() < NUM_MESSAGES) {
-                    Message message = consumer.receive();
+                    Message message = consumer.receive(100);
                     counter.incrementAndGet();
                 }
             } catch (Exception e) {
