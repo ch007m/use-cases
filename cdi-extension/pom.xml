@@ -43,11 +43,11 @@
             <artifactId>arquillian-junit-container</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.jboss.arquillian.container</groupId>
             <artifactId>arquillian-weld-ee-embedded-1.1</artifactId>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.jboss.shrinkwrap</groupId>
             <artifactId>shrinkwrap-impl-base</artifactId>
@@ -69,6 +69,10 @@
             <artifactId>weld-core-impl</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.jboss.weld.servlet</groupId>
+            <artifactId>weld-servlet</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.jboss.spec.javax.ejb</groupId>
             <artifactId>jboss-ejb-api_3.1_spec</artifactId>
         </dependency>
@@ -79,6 +83,13 @@
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
+        </dependency>
+
+        <!-- Java EE -->
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-servlet_3.0_spec</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 
@@ -109,13 +120,9 @@
 
         <!-- WildFly 8.x - Managed -->
         <profile>
-            <id>incontainer</id>
+            <id>wildfly</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
-                <property>
-                    <name>incontainer</name>
-                    <value>true</value>
-                </property>
             </activation>
 
             <dependencies>

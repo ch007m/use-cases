@@ -29,7 +29,17 @@
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
+            <artifactId>camel-spring</artifactId>
+            <version>${camel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
             <artifactId>camel-bindy</artifactId>
+            <version>${camel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-quartz</artifactId>
             <version>${camel.version}</version>
         </dependency>
         <!-- logging -->
@@ -88,6 +98,15 @@
                 <configuration>
                     <mainClass>my.cool.demo.MainApp</mainClass>
                     <includePluginDependencies>false</includePluginDependencies>
+                </configuration>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-maven-plugin</artifactId>
+                <version>${camel.version}</version>
+                <configuration>
+                    <fileApplicationContextUri>src/main/resources/routes.xml</fileApplicationContextUri>
                 </configuration>
             </plugin>
 

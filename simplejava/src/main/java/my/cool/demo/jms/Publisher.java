@@ -45,7 +45,7 @@ class Publisher {
             body += DATA.charAt(i%DATA.length());
         }
 
-        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://" + host + ":" + port + "?jms.useAsyncSend=false");
+        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://" + host + ":" + port + "?jms.useAsyncSend=false&jms.alwaysSyncSend=true");
 
         Connection connection = factory.createConnection(user, password);
         logger.info("Connection created");

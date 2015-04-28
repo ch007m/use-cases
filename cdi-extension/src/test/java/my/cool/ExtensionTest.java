@@ -30,6 +30,7 @@ public class ExtensionTest {
     public static WebArchive createWebArchive() {
         WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war");
         war.addAsLibrary(createJavaArchive());
+        war.setWebXML(ExtensionTest.class.getPackage(), "WEB-INF/web.xml");
         war.addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"));
         return war;
     }
