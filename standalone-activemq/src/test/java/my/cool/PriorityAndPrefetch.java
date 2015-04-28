@@ -121,10 +121,13 @@ public class PriorityAndPrefetch extends TestCase {
                 connection.start();
                 Session session = connection.createSession(false, ActiveMQSession.INDIVIDUAL_ACKNOWLEDGE);
                 MessageProducer producer = session.createProducer(destination);
-                
+
                 for (int i = 0; i < this.NUM_MESSAGES; ++i) {
                     producer.send(session.createTextMessage("TEST"));
                 }
+
+                connection.stop();
+                
             } catch (Exception e) {
                 log.error("Caught an unexpected error: ", e);
             } finally {
@@ -161,6 +164,8 @@ public class PriorityAndPrefetch extends TestCase {
                     Message message = consumer.receive(100);
                     counter.incrementAndGet();
                 }
+                
+                connection.stop();
             } catch (Exception e) {
                 log.error("Caught an unexpected error: ", e);
             } finally {
