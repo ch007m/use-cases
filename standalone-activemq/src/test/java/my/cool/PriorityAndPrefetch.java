@@ -1,9 +1,7 @@
 package my.cool;
 
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.jms.*;
@@ -16,7 +14,6 @@ import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.region.policy.PolicyEntry;
 import org.apache.activemq.broker.region.policy.PolicyMap;
 import org.apache.activemq.command.ActiveMQQueue;
-import org.apache.activemq.store.kahadb.KahaDBStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +31,7 @@ public class PriorityAndPrefetch extends TestCase {
     private Connection connection;
     private Session session;
     private final Random pause = new Random();
+    int NUM_MESSAGES = 50;
 
     private final AtomicLong totalConsumed = new AtomicLong();
 
@@ -45,12 +43,11 @@ public class PriorityAndPrefetch extends TestCase {
         brokerService.setUseJmx(false);
         brokerService.setDeleteAllMessagesOnStartup(true);
 
-        // A small max page size makes this issue occur faster.
-        PolicyMap policyMap = new PolicyMap();
+/*        PolicyMap policyMap = new PolicyMap();
         PolicyEntry pe = new PolicyEntry();
-        pe.setQueuePrefetch(1000);
+        pe.setQueuePrefetch(5);
         policyMap.put(new ActiveMQQueue(">"), pe);
-        brokerService.setDestinationPolicy(policyMap);
+        brokerService.setDestinationPolicy(policyMap);*/
 
         brokerService.addConnector(ACTIVEMQ_BROKER_BIND);
         brokerService.start();
@@ -73,11 +70,6 @@ public class PriorityAndPrefetch extends TestCase {
         connection = connectionFactory.createConnection();
         connection.start();
         session = connection.createSession(false, ActiveMQSession.INDIVIDUAL_ACKNOWLEDGE);
-
-        final int NUM_MESSAGES = 50;
-
-        log.info("Consumer queue 1 :" + getName() + "?consumer.priority=1");
-        log.info("Consumer queue 2 :" + getName() + "?consumer.priority=2");
 
         Queue queue1 = new ActiveMQQueue(getName() + "?consumer.priority=1");
         Queue queue2 = new ActiveMQQueue(getName() + "?consumer.priority=2");
@@ -116,6 +108,56 @@ public class PriorityAndPrefetch extends TestCase {
         producerThread.start();
         producerThread.join();
         
+        long resultc1 = c1.getCounter().addAndGet(0);
+        long resultc2 = c2.getCounter().addAndGet(0);
+
+        assertEquals(0, resultc1);
+        assertEquals(50, resultc2);
+    }
+
+    public void testTwoConsumersWithPriority1and2AndPrefetchSize5() throws Exception {
+
+        connection = connectionFactory.createConnection();
+        connection.start();
+        session = connection.createSession(false, ActiveMQSession.INDIVIDUAL_ACKNOWLEDGE);
+
+        Queue queue1 = new ActiveMQQueue(getName() + "?consumer.priority=1&consumer.prefetchSize=5");
+        Queue queue2 = new ActiveMQQueue(getName() + "?consumer.priority=2&consumer.prefetchSize=5");
+        Queue queue = new ActiveMQQueue(getName());
+
+        MessageConsumer consumer1 = session.createConsumer(queue1);
+        MessageConsumer consumer2 = session.createConsumer(queue2);
+
+        final MessageProducer producer = session.createProducer(queue);
+
+        ConsumerThread c1 = new ConsumerThread(consumer1, NUM_MESSAGES);
+        c1.start();
+
+        ConsumerThread c2 = new ConsumerThread(consumer2, NUM_MESSAGES);
+        c2.start();
+
+        /* DON't WORK as counter of c1, c2 = 0
+           ProducerThread p1 = new ProducerThread(producer, NUM_MESSAGES);
+           p1.start();
+         */
+
+        Thread producerThread = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                try {
+                    for (int i = 0; i < NUM_MESSAGES; ++i) {
+                        producer.send(session.createTextMessage("TEST"));
+                        TimeUnit.MILLISECONDS.sleep(pause.nextInt(10));
+                    }
+                } catch (Exception e) {
+                    log.error("Caught an unexpected error: ", e);
+                }
+            }
+        });
+        producerThread.start();
+        producerThread.join();
+
         long resultc1 = c1.getCounter().addAndGet(0);
         long resultc2 = c2.getCounter().addAndGet(0);
 
