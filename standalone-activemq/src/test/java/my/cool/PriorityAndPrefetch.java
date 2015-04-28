@@ -1,7 +1,5 @@
 package my.cool;
 
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.jms.*;
@@ -9,7 +7,6 @@ import javax.jms.*;
 import junit.framework.TestCase;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.ActiveMQSession;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.slf4j.Logger;
@@ -47,31 +44,36 @@ public class PriorityAndPrefetch extends TestCase {
     public void testTwoConsumersWithPriority1and2() throws Exception {
 
         int NUM_MESSAGES = 10;
-        int EXPECTED_NUM_CONSUMER_HIGH= 10;
+        int EXPECTED_NUM_CONSUMER_HIGH = 10;
 
         Queue queueHigh = new ActiveMQQueue(getName() + "?consumer.priority=2");
+        Queue queueLow = new ActiveMQQueue(getName() + "?consumer.priority=1");
         Queue queue = new ActiveMQQueue(getName());
 
         ACTIVEMQ_BROKER_URI = brokerService.getTransportConnectors().get(0).getPublishableConnectString();
         Connection connection = new ActiveMQConnectionFactory(ACTIVEMQ_BROKER_URI).createConnection();
         connection.start();
-        
+
         Session sessionProducer = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         Session sessionConsumerHigh = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-
-        ConsumerThread high = new ConsumerThread(EXPECTED_NUM_CONSUMER_HIGH, sessionConsumerHigh, queueHigh);
-        high.start();
+        Session sessionConsumerLow = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
         ProducerThread p1 = new ProducerThread(NUM_MESSAGES, sessionProducer, queue);
         p1.start();
         p1.join();
 
-        Thread.sleep(500);
+        ConsumerThread high = new ConsumerThread(EXPECTED_NUM_CONSUMER_HIGH, sessionConsumerHigh, queueHigh);
+        high.start();
+        high.join();
+
+        ConsumerThread low = new ConsumerThread(0, sessionConsumerLow, queueLow);
+        low.start();
+        low.join();
 
         long resultHigh = high.getCounter().addAndGet(0);
 
         assertEquals(EXPECTED_NUM_CONSUMER_HIGH, resultHigh);
-        
+
         connection.close();
     }
 
@@ -79,9 +81,9 @@ public class PriorityAndPrefetch extends TestCase {
 
         int NUM_MESSAGES = 20;
         int EXPECTED_NUM_CONSUMER_LOW = 15;
-        int EXPECTED_NUM_CONSUMER_HIGH= 5;
+        int EXPECTED_NUM_CONSUMER_HIGH = 5;
 
-        Queue queueLow  = new ActiveMQQueue(getName() + "?consumer.priority=1&consumer.prefetchSize=100");
+        Queue queueLow = new ActiveMQQueue(getName() + "?consumer.priority=1&consumer.prefetchSize=100");
         Queue queueHigh = new ActiveMQQueue(getName() + "?consumer.priority=2&consumer.prefetchSize=5");
         Queue queue = new ActiveMQQueue(getName());
 
@@ -93,28 +95,63 @@ public class PriorityAndPrefetch extends TestCase {
         Session sessionConsumerHigh = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         Session sessionConsumerLow = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
+        ProducerThread p1 = new ProducerThread(NUM_MESSAGES, sessionProducer, queue);
+        p1.start();
+        p1.join();
+
         ConsumerThread low = new ConsumerThread(EXPECTED_NUM_CONSUMER_LOW, sessionConsumerLow, queueLow);
         low.start();
 
         ConsumerThread high = new ConsumerThread(EXPECTED_NUM_CONSUMER_HIGH, sessionConsumerHigh, queueHigh);
         high.start();
-        
+
         low.join();
         high.join();
-
-        ProducerThread p1 = new ProducerThread(NUM_MESSAGES, sessionProducer, queue);
-        p1.start();
-        p1.join();
-
-        Thread.sleep(500);
-
+        
         long resultLow = low.getCounter().addAndGet(0);
         long resultHigh = high.getCounter().addAndGet(0);
 
         assertEquals(EXPECTED_NUM_CONSUMER_LOW, resultLow);
         assertEquals(EXPECTED_NUM_CONSUMER_HIGH, resultHigh);
-        
+
         connection.close();
+    }
+
+    public void testTwoConsumersWithOneExclusiveConsumer() throws Exception {
+
+        int NUM_MESSAGES = 10;
+        int EXPECTED_NUM_CONSUMER_EXCLUSIVE = 10;
+
+        Queue queueExclusive = new ActiveMQQueue(getName() + "?consumer.exclusive=true");
+        Queue queue = new ActiveMQQueue(getName());
+
+        ACTIVEMQ_BROKER_URI = brokerService.getTransportConnectors().get(0).getPublishableConnectString();
+        Connection connection = new ActiveMQConnectionFactory(ACTIVEMQ_BROKER_URI).createConnection();
+        connection.start();
+
+        Session sessionProducer = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Session sessionConsumerExclusive = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Session sessionConsumerNonExclusive = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+        ProducerThread p1 = new ProducerThread(NUM_MESSAGES, sessionProducer, queue);
+        p1.start();
+        p1.join();
+
+        ConsumerThread exclusive = new ConsumerThread(EXPECTED_NUM_CONSUMER_EXCLUSIVE, sessionConsumerExclusive, queueExclusive);
+        exclusive.start();
+
+        ConsumerThread nonExclusive = new ConsumerThread(0, sessionConsumerNonExclusive, queue);
+        nonExclusive.start();
+        
+        exclusive.join();
+        nonExclusive.join();
+
+        long resultHigh = exclusive.getCounter().addAndGet(0);
+
+        assertEquals(EXPECTED_NUM_CONSUMER_EXCLUSIVE, resultHigh);
+
+        connection.close();
+
     }
 
     public class ProducerThread extends Thread {
@@ -167,12 +204,14 @@ public class PriorityAndPrefetch extends TestCase {
         public void run() {
             try {
                 consumer = session.createConsumer(destination);
-                
-                while (counter.get() < NUM_MESSAGES) {
-                    Message message = consumer.receive(100);
-                    counter.incrementAndGet();
+                if (NUM_MESSAGES > 0) {
+                    while (counter.get() < NUM_MESSAGES) {
+                        Message message = consumer.receive(100);
+                        counter.incrementAndGet();
+                    }
+                } else {
+                    Message message = consumer.receive(5000); 
                 }
-                
             } catch (Exception e) {
                 log.error("Caught an unexpected error: ", e);
             } finally {
