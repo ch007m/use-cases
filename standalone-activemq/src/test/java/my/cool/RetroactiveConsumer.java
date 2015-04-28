@@ -38,6 +38,7 @@ public class RetroactiveConsumer extends TestCase {
 
     protected void restartBroker() throws Exception {
         broker.stop();
+        createBroker();
         broker.start();
     }
 
@@ -54,6 +55,7 @@ public class RetroactiveConsumer extends TestCase {
         broker.setDeleteAllMessagesOnStartup(true);
         broker.setPersistenceAdapter(createPersistenceAdapter());
         broker.setPersistent(true);
+        broker.setUseJmx(true);
         broker.addConnector(ACTIVEMQ_BROKER_BIND);
         broker.start();
         broker.waitUntilStarted();
@@ -79,7 +81,8 @@ public class RetroactiveConsumer extends TestCase {
 
         // Ensure that consumer will receive messages sent before it was created
         Topic topic = session.createTopic("TestTopic?consumer.retroactive=true");
-        TopicSubscriber consumer = session.createDurableSubscriber(topic, "sub1");
+        //TopicSubscriber consumer = session.createDurableSubscriber(topic, "sub1");
+        TopicSubscriber sub1 = session.createDurableSubscriber(topic, "sub1");
 
         // Produce a message
         MessageProducer producer = session.createProducer(topic);
@@ -88,22 +91,23 @@ public class RetroactiveConsumer extends TestCase {
         // Make sure it works when the durable sub is active.
         producer.send(session.createTextMessage("Msg:1"));
 
-        // Activate the sub.
-        consumer = session.createDurableSubscriber(topic, "sub1");
-        consumer.close();
-
         // Send a new message.
         producer.send(session.createTextMessage("Msg:2"));
 
         // Restart the broker.
         restartBroker();
-        
-        // Reconnect the consumers
-        consumer = session.createDurableSubscriber(topic, "sub1");
+
+        // Recreate the subscriber to check if it will be able to recover the messages
+        ACTIVEMQ_BROKER_URI = broker.getTransportConnectors().get(0).getPublishableConnectString();
+        connection = new ActiveMQConnectionFactory(ACTIVEMQ_BROKER_URI).createConnection();
+        connection.setClientID("cliId1");
+        connection.start();
+        session = connection.createSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
+        sub1 = session.createDurableSubscriber(topic, "sub1");
 
         // Try to get the message.
-        assertTextMessageEquals("Msg:1", consumer.receive(5000));
-        assertTextMessageEquals("Msg:2", consumer.receive(5000));
+        assertTextMessageEquals("Msg:1", sub1.receive(5000));
+        assertTextMessageEquals("Msg:2", sub1.receive(5000));
     }
 
     private void assertTextMessageEquals(String string, Message message) throws JMSException {
