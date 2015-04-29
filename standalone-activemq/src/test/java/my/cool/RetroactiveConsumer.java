@@ -58,8 +58,7 @@ public class RetroactiveConsumer extends TestCase {
         PolicyEntry policy = new PolicyEntry();
         policy.setTopic(">");
         policy.setDispatchPolicy(new SimpleDispatchPolicy());
-        policy.setSubscriptionRecoveryPolicy(new FixedCountSubscriptionRecoveryPolicy());
-        /* new FixedCountSubscriptionRecoveryPolicy() */
+        policy.setSubscriptionRecoveryPolicy(new LastImageSubscriptionRecoveryPolicy());
         PolicyMap policyMap = new PolicyMap();
         policyMap.setDefaultEntry(policy);
 
@@ -79,8 +78,7 @@ public class RetroactiveConsumer extends TestCase {
         PolicyEntry policy = new PolicyEntry();
         policy.setTopic(">");
         policy.setDispatchPolicy(new SimpleDispatchPolicy());
-        policy.setSubscriptionRecoveryPolicy(new FixedCountSubscriptionRecoveryPolicy());
-        /* new FixedCountSubscriptionRecoveryPolicy() */
+        policy.setSubscriptionRecoveryPolicy(new LastImageSubscriptionRecoveryPolicy());
         PolicyMap policyMap = new PolicyMap();
         policyMap.setDefaultEntry(policy);
 
@@ -110,7 +108,7 @@ public class RetroactiveConsumer extends TestCase {
         return connection;
     }
 
-    public void testFixedRecoveryPolicy() throws Exception {
+    public void testLastImageSubscriptionRecoveryPolicy() throws Exception {
 
         connection.start();
 
