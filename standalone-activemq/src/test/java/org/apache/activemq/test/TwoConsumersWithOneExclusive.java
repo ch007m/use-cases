@@ -1,27 +1,21 @@
 package org.apache.activemq.test;
 
-import java.util.concurrent.atomic.AtomicLong;
-
-import javax.jms.*;
-
 import junit.framework.TestCase;
-
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PriorityAndPrefetch extends TestCase {
+import javax.jms.*;
+import java.util.concurrent.atomic.AtomicLong;
+
+public class TwoConsumersWithOneExclusive extends TestCase {
 
     private static final Logger log = LoggerFactory.getLogger(ConsumerThread.class);
-
-    private BrokerService brokerService;
-
     private final String ACTIVEMQ_BROKER_BIND = "tcp://localhost:0";
+    private BrokerService brokerService;
     private String ACTIVEMQ_BROKER_URI;
-
-    private ActiveMQConnectionFactory connectionFactory;
 
     @Override
     protected void setUp() throws Exception {
@@ -41,13 +35,12 @@ public class PriorityAndPrefetch extends TestCase {
         brokerService.waitUntilStarted();
     }
 
-    public void testTwoConsumersWithPriority1and2() throws Exception {
+    public void testTwoConsumersWithOneExclusiveConsumer() throws Exception {
 
         int NUM_MESSAGES = 10;
-        int EXPECTED_NUM_CONSUMER_HIGH = 10;
+        int EXPECTED_NUM_CONSUMER_EXCLUSIVE = 10;
 
-        Queue queueHigh = new ActiveMQQueue(getName() + "?consumer.priority=2");
-        Queue queueLow = new ActiveMQQueue(getName() + "?consumer.priority=1");
+        Queue queueExclusive = new ActiveMQQueue(getName() + "?consumer.exclusive=true");
         Queue queue = new ActiveMQQueue(getName());
 
         ACTIVEMQ_BROKER_URI = brokerService.getTransportConnectors().get(0).getPublishableConnectString();
@@ -55,66 +48,28 @@ public class PriorityAndPrefetch extends TestCase {
         connection.start();
 
         Session sessionProducer = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Session sessionConsumerHigh = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Session sessionConsumerLow = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Session sessionConsumerExclusive = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+        Session sessionConsumerNonExclusive = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
         ProducerThread p1 = new ProducerThread(NUM_MESSAGES, sessionProducer, queue);
         p1.start();
         p1.join();
 
-        ConsumerThread high = new ConsumerThread(EXPECTED_NUM_CONSUMER_HIGH, sessionConsumerHigh, queueHigh);
-        high.start();
-        high.join();
+        ConsumerThread exclusive = new ConsumerThread(EXPECTED_NUM_CONSUMER_EXCLUSIVE, sessionConsumerExclusive, queueExclusive);
+        exclusive.start();
 
-        ConsumerThread low = new ConsumerThread(0, sessionConsumerLow, queueLow);
-        low.start();
-        low.join();
-
-        long resultHigh = high.getCounter().addAndGet(0);
-
-        assertEquals(EXPECTED_NUM_CONSUMER_HIGH, resultHigh);
-
-        connection.close();
-    }
-
-    public void testTwoConsumersWithPriority1and2AndPrefetchSize5() throws Exception {
-
-        int NUM_MESSAGES = 20;
-        int EXPECTED_NUM_CONSUMER_LOW = 15;
-        int EXPECTED_NUM_CONSUMER_HIGH = 5;
-
-        Queue queueLow = new ActiveMQQueue(getName() + "?consumer.priority=1&consumer.prefetchSize=100");
-        Queue queueHigh = new ActiveMQQueue(getName() + "?consumer.priority=2&consumer.prefetchSize=5");
-        Queue queue = new ActiveMQQueue(getName());
-
-        ACTIVEMQ_BROKER_URI = brokerService.getTransportConnectors().get(0).getPublishableConnectString();
-        Connection connection = new ActiveMQConnectionFactory(ACTIVEMQ_BROKER_URI).createConnection();
-        connection.start();
-
-        Session sessionProducer = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Session sessionConsumerHigh = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-        Session sessionConsumerLow = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-
-        ProducerThread p1 = new ProducerThread(NUM_MESSAGES, sessionProducer, queue);
-        p1.start();
-        p1.join();
-
-        ConsumerThread low = new ConsumerThread(EXPECTED_NUM_CONSUMER_LOW, sessionConsumerLow, queueLow);
-        low.start();
-
-        ConsumerThread high = new ConsumerThread(EXPECTED_NUM_CONSUMER_HIGH, sessionConsumerHigh, queueHigh);
-        high.start();
-
-        low.join();
-        high.join();
+        ConsumerThread nonExclusive = new ConsumerThread(0, sessionConsumerNonExclusive, queue);
+        nonExclusive.start();
         
-        long resultLow = low.getCounter().addAndGet(0);
-        long resultHigh = high.getCounter().addAndGet(0);
+        exclusive.join();
+        nonExclusive.join();
 
-        assertEquals(EXPECTED_NUM_CONSUMER_LOW, resultLow);
-        assertEquals(EXPECTED_NUM_CONSUMER_HIGH, resultHigh);
+        long resultHigh = exclusive.getCounter().addAndGet(0);
+
+        assertEquals(EXPECTED_NUM_CONSUMER_EXCLUSIVE, resultHigh);
 
         connection.close();
+
     }
 
     public class ProducerThread extends Thread {
