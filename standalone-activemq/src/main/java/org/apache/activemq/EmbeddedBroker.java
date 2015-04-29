@@ -1,4 +1,4 @@
-package my.cool.demo.jms;
+package org.apache.activemq;
 
 import org.apache.activemq.broker.BrokerService;
 

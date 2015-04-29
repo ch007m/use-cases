@@ -1,4 +1,4 @@
-package my.cool;
+package org.apache.activemq.test;
 
 import java.util.concurrent.atomic.AtomicLong;
 

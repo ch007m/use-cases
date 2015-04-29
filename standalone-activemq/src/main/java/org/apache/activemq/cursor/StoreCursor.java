@@ -1,14 +1,12 @@
-package my.cool.demo.jms.cursor;
+package org.apache.activemq.cursor;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
-import org.apache.activemq.broker.region.policy.FilePendingQueueMessageStoragePolicy;
 import org.apache.activemq.broker.region.policy.PolicyEntry;
 import org.apache.activemq.broker.region.policy.PolicyMap;
 import org.apache.activemq.broker.region.policy.StorePendingQueueMessageStoragePolicy;
 import org.apache.activemq.usage.SystemUsage;
 
-import javax.jms.*;
 import java.util.Date;
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;

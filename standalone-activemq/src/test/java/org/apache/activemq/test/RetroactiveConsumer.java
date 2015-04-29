@@ -1,18 +1,15 @@
-package my.cool;
+package org.apache.activemq.test;
 
 import junit.framework.TestCase;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.region.policy.*;
-import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.store.PersistenceAdapter;
 import org.apache.activemq.store.kahadb.KahaDBPersistenceAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
-import java.io.IOException;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class RetroactiveConsumer extends TestCase {
 
@@ -58,7 +55,9 @@ public class RetroactiveConsumer extends TestCase {
         PolicyEntry policy = new PolicyEntry();
         policy.setTopic(">");
         policy.setDispatchPolicy(new SimpleDispatchPolicy());
-        policy.setSubscriptionRecoveryPolicy(new LastImageSubscriptionRecoveryPolicy());
+        FixedCountSubscriptionRecoveryPolicy fixed = new FixedCountSubscriptionRecoveryPolicy();
+        fixed.setMaximumSize(10);
+        policy.setSubscriptionRecoveryPolicy(fixed);
         PolicyMap policyMap = new PolicyMap();
         policyMap.setDefaultEntry(policy);
 
@@ -78,7 +77,9 @@ public class RetroactiveConsumer extends TestCase {
         PolicyEntry policy = new PolicyEntry();
         policy.setTopic(">");
         policy.setDispatchPolicy(new SimpleDispatchPolicy());
-        policy.setSubscriptionRecoveryPolicy(new LastImageSubscriptionRecoveryPolicy());
+        FixedCountSubscriptionRecoveryPolicy fixed = new FixedCountSubscriptionRecoveryPolicy();
+        fixed.setMaximumSize(10);
+        policy.setSubscriptionRecoveryPolicy(fixed);
         PolicyMap policyMap = new PolicyMap();
         policyMap.setDefaultEntry(policy);
 
@@ -96,9 +97,6 @@ public class RetroactiveConsumer extends TestCase {
 
     protected PersistenceAdapter createPersistenceAdapter() throws Exception {
         KahaDBPersistenceAdapter adapter = new KahaDBPersistenceAdapter();
-        adapter.setConcurrentStoreAndDispatchQueues(false);
-        adapter.setConcurrentStoreAndDispatchTopics(false);
-        adapter.deleteAllMessages();
         return adapter;
     }
 
@@ -108,7 +106,7 @@ public class RetroactiveConsumer extends TestCase {
         return connection;
     }
 
-    public void testLastImageSubscriptionRecoveryPolicy() throws Exception {
+    public void testFixedCountSubscriptionRecoveryPolicy() throws Exception {
 
         connection.start();
 
@@ -126,7 +124,9 @@ public class RetroactiveConsumer extends TestCase {
 
         // Make sure it works when the durable sub is active.
         producer.send(session.createTextMessage("Msg:1"));
-        
+        producer.send(session.createTextMessage("Msg:2"));
+        producer.send(session.createTextMessage("Msg:3"));
+
         restartBroker();
 
         connection = getConnection();
@@ -134,14 +134,16 @@ public class RetroactiveConsumer extends TestCase {
         session = connection.createSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
         producer = session.createProducer(topic);
         producer.setDeliveryMode(DeliveryMode.PERSISTENT);
-        producer.send(session.createTextMessage("Msg:2"));
+        producer.send(session.createTextMessage("Msg:4"));
 
         // Recreate the subscriber to check if it will be able to recover the messages
         sub1 = session.createDurableSubscriber(topicSub, "sub1");
 
         // Try to get the messages
-        assertTextMessageEquals("Msg:2", sub1.receive(1000));
         assertTextMessageEquals("Msg:1", sub1.receive(1000));
+        assertTextMessageEquals("Msg:2", sub1.receive(1000));
+        assertTextMessageEquals("Msg:3", sub1.receive(1000));
+        assertTextMessageEquals("Msg:4", sub1.receive(1000));
     }
 
     private void assertTextMessageEquals(String string, Message message) throws JMSException {

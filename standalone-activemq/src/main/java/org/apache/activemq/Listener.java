@@ -14,19 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package my.cool.demo.jms;
+package org.apache.activemq;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
-import org.apache.activemq.command.ActiveMQTopic;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
+import javax.jms.Message;
 
-class Publisher {
-    
-    private static final Logger logger = LoggerFactory.getLogger(Publisher.class);
+class Listener {
 
     public static void main(String []args) throws JMSException {
 
@@ -36,37 +32,45 @@ class Publisher {
         int port = Integer.parseInt(env("ACTIVEMQ_PORT", "61616"));
         String destination = arg(args, 0, "foo.bar");
 
-        int messages = 10;
-        int size = 256;
-
-        String DATA = "abcdefghijklmnopqrstuvwxyz";
-        String body = "";
-        for( int i=0; i < size; i ++) {
-            body += DATA.charAt(i%DATA.length());
-        }
-
-        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://" + host + ":" + port + "?jms.useAsyncSend=false&jms.alwaysSyncSend=true");
+        ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory("tcp://" + host + ":" + port);
 
         Connection connection = factory.createConnection(user, password);
-        logger.info("Connection created");
         connection.start();
-        logger.info("Connection started");
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         Destination dest = new ActiveMQQueue(destination);
-        MessageProducer producer = session.createProducer(dest);
-        producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 
-        for( int i=1; i <= messages; i ++) {
-            TextMessage msg = session.createTextMessage(body);
-            msg.setIntProperty("id", i);
-            producer.send(msg);
-            logger.info("Message send" + i );
+        MessageConsumer consumer = session.createConsumer(dest);
+        long start = System.currentTimeMillis();
+        long count = 1;
+        System.out.println("Waiting for messages...");
+        while(true) {
+            Message msg = consumer.receive();
+            if( msg instanceof  TextMessage ) {
+                String body = ((TextMessage) msg).getText();
+                if( "THE.END".equals(body)) {
+                    long diff = System.currentTimeMillis() - start;
+                    System.out.println(String.format("Received %d in %.2f seconds", count, (1.0*diff/1000.0)));
+                    break;
+                } else {
+                    if( count != msg.getIntProperty("id") ) {
+                        System.out.println("mismatch: "+count+"!="+msg.getIntProperty("id"));
+                    }
+                    count = msg.getIntProperty("id");
+
+                    if( count == 0 ) {
+                        start = System.currentTimeMillis();
+                    }
+                    if( count % 1000 == 0 ) {
+                        System.out.println(String.format("Received %d messages.", count));
+                    }
+                    count ++;
+                }
+
+            } else {
+                System.out.println("Unexpected message type: "+msg.getClass());
+            }
         }
-
-        producer.send(session.createTextMessage("THE.END"));
         connection.close();
-        logger.info("Connection closed");
-
     }
 
     private static String env(String key, String defaultValue) {
@@ -82,5 +86,4 @@ class Publisher {
         else
             return defaultValue;
     }
-
 }
