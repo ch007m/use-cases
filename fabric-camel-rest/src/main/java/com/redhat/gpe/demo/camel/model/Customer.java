@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.redhat.gpe.training.camel.model;
+package com.redhat.gpe.demo.camel.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;

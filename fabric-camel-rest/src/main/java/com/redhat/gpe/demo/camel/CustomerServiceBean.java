@@ -1,12 +1,11 @@
-package com.redhat.gpe.training.camel;
+package com.redhat.gpe.demo.camel;
 
-import com.redhat.gpe.training.camel.model.Customer;
+import com.redhat.gpe.demo.camel.model.Customer;
 import org.apache.camel.Exchange;
 import org.apache.cxf.message.MessageContentsList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;

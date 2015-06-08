@@ -16,40 +16,39 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.redhat.gpe.training.camel.model;
+package com.redhat.gpe.demo.camel;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Date;
+import com.redhat.gpe.demo.camel.model.Customer;
 
-@XmlRootElement(name = "Customer")
-public class Customer {
-    private long id;
-    private String name;
-    private Date lastUpdated;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
 
-    public long getId() {
-        return id;
+@Path("/customerservice/")
+public class CustomerServiceResource {
+
+    public CustomerServiceResource() {}
+
+    @GET
+    @Path("/customers/{id}/")
+    public Response getCustomer(@PathParam("id") String id) {
+        return null;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    @PUT
+    @Path("/customers/")
+    @Consumes({"application/xml", "application/json"})
+    public Response updateCustomer(Customer customer) {
+        return null;
     }
 
-    public String getName() {
-        return name;
+    @POST
+    @Path("/customers/")
+    @Consumes({"application/xml", "application/json"})
+    public Response addCustomer(Customer customer) {
+        return null;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-	
-	public void setLastUpdated(Date lastUpdated) {
-		this.lastUpdated = lastUpdated;
-	}
-
-	public Date getLastUpdated() {
-		return lastUpdated;
-	}
-    
+    @DELETE
+    @Path("/customers/{id}/")
+    public Response deleteCustomer(@PathParam("id") String id) { return null; }
 }

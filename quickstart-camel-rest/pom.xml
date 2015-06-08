@@ -243,7 +243,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>fabric-camel-rest</Bundle-SymbolicName>
-                        <Private-Package>com.redhat.gpe.training</Private-Package>
+                        <Private-Package>com.redhat.gpe.demo</Private-Package>
                         <Import-Package>
                             !org.junit,
                             !org.apache.http*,
@@ -252,7 +252,7 @@
                             *
                         </Import-Package>
                         <Private-Package>
-                            com.redhat.gpe.training.internal
+                            com.redhat.gpe.demo.internal
                         </Private-Package>
                     </instructions>
                 </configuration>

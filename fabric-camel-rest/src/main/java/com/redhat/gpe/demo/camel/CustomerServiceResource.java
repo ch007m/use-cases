@@ -16,9 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.redhat.gpe.training.camel;
+package com.redhat.gpe.demo.camel;
 
-import com.redhat.gpe.training.camel.model.Customer;
+import com.redhat.gpe.demo.camel.model.Customer;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiParam;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
@@ -28,11 +32,20 @@ public class CustomerServiceResource {
 
     public CustomerServiceResource() {}
 
-    @GET
+/*    @GET
     @Path("/customers/{id}/")
     public Response getCustomer(@PathParam("id") String id) {
         return null;
-    }
+    }*/
+
+    @GET
+    @Path("/customers/{id}/")
+    @ApiOperation(value = "Find Customer by ID", notes = "More notes about this method", response = Customer.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 500, message = "Invalid ID supplied"),
+            @ApiResponse(code = 204, message = "Customer not found")
+    })
+    public Response getCustomer(@ApiParam(value = "ID of Customer to fetch", required = true) @PathParam("id") String id) {return null; }
 
     @PUT
     @Path("/customers/")

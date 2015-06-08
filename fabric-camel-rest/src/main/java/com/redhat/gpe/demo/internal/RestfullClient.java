@@ -1,4 +1,4 @@
-package com.redhat.gpe.training.internal;
+package com.redhat.gpe.demo.internal;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpDelete;
