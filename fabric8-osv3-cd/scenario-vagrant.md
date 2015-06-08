@@ -32,8 +32,7 @@
 ```
 * To delete the pods, services, routes created and redeploy the project, use these commands
 ```
-    osc delete se,rc,dc,bc,oauthclient,pods,Route --all
-    osc delete pods --all
+    osc delete se,rc,dc,bc,oauthclient,pods,route --all
     osc process -v DOMAIN='vagrant.local' -f http://central.maven.org/maven2/io/fabric8/apps/base/2.1.1/base-2.1.1-kubernetes.json | osc create -f -
 ```
 
@@ -44,11 +43,24 @@
 
 * If the registry is required after a full delete
 ```
-osdm registry --create --credentials=/var/lib/openshift/openshift.local.config/master/openshift-registry.kubeconfig
+sudo osadm registry --create --credentials=/var/lib/openshift/openshift.local.config/master/openshift-registry.kubeconfig
 ```
 
-* To build & deploy a new image of a quickstart into the fabric8 namespace/project
+* To build & deploy a new image of a quickstart into the fabric8 namespace/project from the macosx machine 
 
+* Prerequisites
+
+Add to the local macosx machine the following route to forward all tge packets to the IP Address of the VM running into the VirtualBox
+```
+sudo route -n delete 172.0.0.0/8
+sudo route -n add 172.0.0.0/8  172.28.128.4
+```  
+And edit the host file to map the hostnames of the pods/containers exposed by openshiftv3 to the IP address
+
+```
+172.28.128.4	fabric8.local gogs.local vagrant.local docker-registry.vagrant.local fabric8-master.vagrant.local fabric8.vagrant.local gogs.vagrant.local jenkins.vagrant.local kibana.vagrant.local nexus.vagrant.local router.vagrant.local gerrit-daemon.vagrant.local gerrit.vagrant.local sonarqube.vagrant.local letschat.vagrant.local orion.vagrant.local taiga.vagrant.local
+```
+  
 * Build
 
 ```
@@ -67,15 +79,38 @@ mvn docker:push -Ddocker.host=$DOCKER_HOST -Ddocker.username=admin -Ddocker.pass
 * To deploy the service, pod, replication controller
 
 ``` 
-osc project fabric8
+osc project default
 osc login -u admin -p admin https://172.28.128.4:8443
-export KUBERNETES_NAMESPACE=fabric8
-mvn fabric8:apply -Dfabric8.apply.recreate=true
+export KUBERNETES_NAMESPACE=default
+mvn clean fabric8:json fabric8:apply -Dfabric8.apply.recreate=true
 ``` 
 
 * And create the routes
+
 ```
 mvn io.fabric8:fabric8-maven-plugin:2.1.1:create-routes
+```
+
+* Deploy gerrit, gogs to test it
+
+```
+cd /Users/chmoulli/Fuse/Fuse-projects/fabric8/quickstarts-forked/apps/gerrit
+osc create -f target/classes/kubernetes.json
+services/gerrit-service
+services/gerrit-daemon-service
+replicationControllers/gerrit
+
+osc process -v DOMAIN='gogs.local' -f target/classes/kubernetes.json | osc create -f -
+
+using snapshot
+
+ mvn clean io.fabric8:fabric8-maven-plugin:2.2-SNAPSHOT:json io.fabric8:fabric8-maven-plugin:2.2-SNAPSHOT:apply -Dfabric8.apply.recreate=true
+
+and jenkins
+ 
+cd ../jenkins/
+mvn clean io.fabric8:fabric8-maven-plugin:2.2-SNAPSHOT:json io.fabric8:fabric8-maven-plugin:2.2-SNAPSHOT:apply -Dfabric8.apply.recreate=true 
+mvn io.fabric8:fabric8-maven-plugin:2.2-SNAPSHOT:create-routes 
 ```
 
 
