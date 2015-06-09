@@ -43,7 +43,7 @@
     <!-- define that url path for the Camel CXF Servlet to use -->
     <servlet-mapping>
         <servlet-name>CXFServlet</servlet-name>
-        <url-pattern>/cxf/rest/*</url-pattern>
+        <url-pattern>/cxf/*</url-pattern>
     </servlet-mapping>
 
     <!-- to setup Camel Swagger api servlet -->
