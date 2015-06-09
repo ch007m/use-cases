@@ -89,6 +89,7 @@ public class CustomerServiceBean {
             response = Response.notModified().build();
         } else {
             System.out.println("Customer deleted");
+            customers.remove(idNumber);
             response = Response.ok().build();
         }
 

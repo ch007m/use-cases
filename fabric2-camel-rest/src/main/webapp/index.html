@@ -34,9 +34,6 @@
             <li>
                 <a href="cxf/rest?_wadl">WADL file</a>
             </li>
-            <li>
-                <a href="cxf/rest/customerservice/customers/123">customer 123</a>
-            </li>
         </ul>
 
         The view operations are HTTP GET, and update is using HTTP PUT.
@@ -44,15 +41,17 @@
         From a web browser you can access the first two services using the following links
 
         <ul>
-            <li><a href="rest/user/123">user/123</a> - to view the user with id 123</li>
-            <li><a href="rest/user/findAll">user/findAll</a> - to list all users</li>
+            <li>
+                <a href="cxf/rest/customerservice/customers/123">customer 123</a>
+            </li>
         </ul>
 
         From the command shell you can use curl to access the service as shown below:
 <pre>
-    curl -X GET -H "Accept: application/json" http://localhost:8080/camel-example-servlet-rest-tomcat/rest/user/123
-    curl -X GET -H "Accept: application/json" http://localhost:8080/camel-example-servlet-rest-tomcat/rest/user/findAll
-    curl -X PUT -d "{ \"id\": 666, \"name\": \"The devil\"}" -H "Accept: application/json" http://localhost:8080/camel-example-servlet-rest-tomcat/rest/user
+ curl -X GET http://localhost:9090/rest/customerservice/customers/123
+ curl -i -H "Content-Type: application/json" -X POST -d '{"Customer":{"name":"Charles"}}'    http://localhost:9090/rest/customerservice/customers
+ curl -i -H "Content-Type: application/json" -X POST -d '{"Customer":{"id":124,name":"Pauline"}}' http://localhost:9090/rest/customerservice/customers
+ curl -X DEL http://localhost:9090/rest/customerservice/customers/123
 </pre>
 
         Notice when trying to get user with id 789 then there is a built-in delay of 0.5-2 seconds, to simulate some
