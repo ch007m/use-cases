@@ -60,6 +60,16 @@ echo '{"Customer":{"name":"TUG"}}' | http POST http://localhost:8080/cxf/rest/cu
 http DELETE http://localhost:8080/cxf/rest/customerservice/customers/124
  ```
  
+ REMARK : The port number will be different when deployed on Fabric -> 8182, 8182
+ 
+```
+http GET http://localhost:8182/cxf/rest/customerservice/customers/123
+http GET http://localhost:8182/cxf/rest/customerservice/customers/124
+echo '{"Customer":{"name":"TUG"}}' | http POST http://localhost:8182/cxf/rest/customerservice/customers
+echo '{"Customer":{"id":124,"name":"TUG2"}}' | http PUT http://localhost:8182/cxf/rest/customerservice/customers
+http DELETE http://localhost:8182/cxf/rest/customerservice/customers/124
+```
+ 
 
 
 
