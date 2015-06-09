@@ -38,5 +38,6 @@
         <module>cdi-extension</module>
         <module>quickstart-camel-rest</module>
         <module>fabric-camel-rest</module>
+        <module>fabric2-camel-rest</module>
     </modules>
 </project>
