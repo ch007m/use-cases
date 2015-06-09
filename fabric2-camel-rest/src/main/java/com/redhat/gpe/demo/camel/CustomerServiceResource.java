@@ -19,13 +19,12 @@
 package com.redhat.gpe.demo.camel;
 
 import com.redhat.gpe.demo.camel.model.Customer;
-import com.wordnik.swagger.annotations.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 @Path("/customerservice/")
-@Api(value = "/customerservice", description = "Operations about customerservice")
+@Produces({"application/xml", "application/json"})
 public class CustomerServiceResource {
 
     public CustomerServiceResource() {
@@ -33,44 +32,27 @@ public class CustomerServiceResource {
 
     @GET
     @Path("/customers/{id}/")
-    @ApiOperation(value = "Find Customer by ID", notes = "More notes about this method", response = Customer.class)
-    @ApiResponses(value = {
-            @ApiResponse(code = 500, message = "Invalid ID supplied"),
-            @ApiResponse(code = 204, message = "Customer not found")
-    })
-    public Response getCustomer(@ApiParam(value = "ID of Customer to fetch", required = true) @PathParam("id") String id) {
+    public Response getCustomer(@PathParam("id") String id) {
         return null;
     }
 
     @PUT
     @Path("/customers/")
     @Consumes({"application/xml", "application/json"})
-    @ApiOperation(value = "Update an existing Customer")
-    @ApiResponses(value = {
-            @ApiResponse(code = 500, message = "Invalid ID supplied"),
-            @ApiResponse(code = 204, message = "Customer not found")
-    })
-    public Response updateCustomer(@ApiParam(value = "Customer object that needs to be updated", required = true) Customer customer) {
+    public Response updateCustomer(Customer customer) {
         return null;
     }
 
     @POST
     @Path("/customers/")
     @Consumes({"application/xml", "application/json"})
-    @ApiOperation(value = "Add a new Customer")
-    @ApiResponses(value = {@ApiResponse(code = 500, message = "Invalid ID supplied"),})
-    public Response addCustomer(@ApiParam(value = "Customer object that needs to be updated", required = true) Customer customer) {
+    public Response addCustomer(Customer customer) {
         return null;
     }
 
     @DELETE
     @Path("/customers/{id}/")
-    @ApiOperation(value = "Delete Customer")
-    @ApiResponses(value = {
-            @ApiResponse(code = 500, message = "Invalid ID supplied"),
-            @ApiResponse(code = 204, message = "Customer not found")
-    })
-    public Response deleteCustomer(@ApiParam(value = "ID of Customer to delete", required = true) @PathParam("id") String id) {
+    public Response deleteCustomer(@PathParam("id") String id) {
         return null;
     }
 }
