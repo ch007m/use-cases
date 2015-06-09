@@ -21,13 +21,13 @@ When the project is started locally using the Apache Camel Maven goal `mvn camel
   * Put
 
  ```
- curl -i -H "Content-Type: application/json" -X PUT -d '{"Customer":{"id":124,name":"Pauline"}}' http://localhost:8080/cxf/rest/customerservice/customers
+ curl -i -H "Content-Type: application/json" -X PUT -d '{"Customer":{"id":124,"name":"TUG"}}' http://localhost:8080/cxf/rest/customerservice/customers
  ```
 
   * Delete
 
  ```
- curl -X DEL http://localhost:9090/rest/customerservice/customers/123
+ curl -X DEL http://localhost:8080/cxf/rest/customerservice/customers/124
  ```
 
 * HTTPie
