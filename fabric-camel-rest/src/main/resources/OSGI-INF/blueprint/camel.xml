@@ -36,6 +36,7 @@
         <cxf:serviceBeans>
             <!-- Swagger API listing resource -->
             <bean id="swaggerResourceJSON" class="com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON" />
+            <bean id="cusromerService" class="com.redhat.gpe.demo.camel.CustomerServiceResource" />"
         </cxf:serviceBeans>
     </cxf:rsServer>
 
