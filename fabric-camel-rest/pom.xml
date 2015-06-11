@@ -99,6 +99,11 @@
             <artifactId>cxf-rt-transports-http-jetty</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-service-description</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- JSON Provider -->
         <dependency>
