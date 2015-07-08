@@ -37,7 +37,7 @@
         <module>standalone-webservice</module>
         <module>cdi-extension</module>
         <module>quickstart-camel-rest</module>
-        <module>fabric-camel-rest</module>
-        <module>fabric2-camel-rest</module>
+        <module>fabric-camel-spring-rest</module>
+        <module>fabric-camel-blueprint-rest</module>
     </modules>
 </project>

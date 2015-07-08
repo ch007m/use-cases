@@ -8,14 +8,14 @@
     <artifactId>fabric-camel-rest</artifactId>
     <version>1.0</version>
     <packaging>bundle</packaging>
-    <name>RedHat TUG Demo :: Fabric Camel Rest</name>
+    <name>RedHat TUG Demo :: Fabric Camel Spring Rest</name>
 
     <properties>
         <cxf.version>3.0.4.redhat-620121</cxf.version>
-        <camel.version>2.16-SNAPSHOT</camel.version>
+        <camel.version>2.15.2</camel.version>
         <slf4j.version>1.6.6</slf4j.version>
 
-        <jboss.fuse.bom.version>6.2.0.redhat-121</jboss.fuse.bom.version>
+        <jboss.fuse.bom.version>6.2.0.redhat-133</jboss.fuse.bom.version>
     </properties>
     
     <dependencyManagement>
@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
-            <artifactId>camel-blueprint</artifactId>
+            <artifactId>camel-spring</artifactId>
             <version>${camel.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -293,7 +293,7 @@
                 <artifactId>camel-maven-plugin</artifactId>
                 <version>2.16-SNAPSHOT</version>
                 <configuration>
-                    <useBlueprint>true</useBlueprint>
+                    <useBlueprint>false</useBlueprint>
                 </configuration>
             </plugin>
 
