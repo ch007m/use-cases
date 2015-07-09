@@ -73,7 +73,7 @@ http DELETE http://localhost:9090/rest/customerservice/customers/124
 The project must be deployed as a Fabric profile using the following maven command to be executed using a terminal
 
 ```
-vn fabric8:deploy
+mvn fabric8:deploy
 ```
 
 1. Installation of Apiman & Keycloak
