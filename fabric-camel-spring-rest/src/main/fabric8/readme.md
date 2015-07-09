@@ -9,25 +9,25 @@ When the project is started locally using the Apache Camel Maven goal `mvn camel
   * Get
 
  ```
- curl http://localhost:8080/cxf/rest/customerservice/customers/123
+ curl http://localhost:9090/rest/customerservice/customers/123
  ```
 
   * Post
 
  ```
- curl -i -H "Content-Type: application/json" -X POST -d '{"Customer":{"name":"Charles"}}'    http://localhost:8080/cxf/rest/customerservice/customers
+ curl -i -H "Content-Type: application/json" -X POST -d '{"Customer":{"name":"Charles"}}' http://localhost:8080/rest/customerservice/customers
  ```
 
   * Put
 
  ```
- curl -i -H "Content-Type: application/json" -X PUT -d '{"Customer":{"id":124,"name":"TUG"}}' http://localhost:8080/cxf/rest/customerservice/customers
+ curl -i -H "Content-Type: application/json" -X PUT -d '{"Customer":{"id":124,"name":"TUG"}}' http://localhost:8080/rest/customerservice/customers
  ```
 
   * Delete
 
  ```
- curl -X DEL http://localhost:8080/cxf/rest/customerservice/customers/124
+ curl -X DEL http://localhost:8080/rest/customerservice/customers/124
  ```
 
 * HTTPie
@@ -38,27 +38,27 @@ When the project is started locally using the Apache Camel Maven goal `mvn camel
   *  Get
 
 ```
-http GET http://localhost:8080/cxf/rest/customerservice/customers/123
-http GET http://localhost:8080/cxf/rest/customerservice/customers/124
+http GET http://localhost:9090/rest/customerservice/customers/123
+http GET http://localhost:9090/rest/customerservice/customers/124
 ```
 
  *  Post
 
- ```
-echo '{"Customer":{"name":"TUG"}}' | http POST http://localhost:8080/cxf/rest/customerservice/customers
- ```
+```
+echo '{"Customer":{"name":"TUG"}}' | http POST http://localhost:9090/rest/customerservice/customers
+```
 
  *  Put
 
- ```
- echo '{"Customer":{"id":124,"name":"TUG2"}}' | http PUT http://localhost:8080/cxf/rest/customerservice/customers
- ```
+```
+echo '{"Customer":{"id":124,"name":"TUG2"}}' | http PUT http://localhost:9090/rest/customerservice/customers
+```
 
  *  Delete
 
- ```
-http DELETE http://localhost:8080/cxf/rest/customerservice/customers/124
- ```
+```
+http DELETE http://localhost:9090/rest/customerservice/customers/124
+```
  
  REMARK : The port number will be different when deployed on Fabric -> 8182, 8182
  
