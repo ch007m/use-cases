@@ -3,7 +3,7 @@
 TOKEN=$(curl -X POST http://127.0.0.1:8080/auth/realms/stottie/protocol/openid-connect/token  -H "Content-Type: application/x-www-form-urlencoded" -d 'username=rincewind' -d 'password=apiman' -d 'grant_type=password' -d 'client_id=apiman' | jq -r '.access_token')
 APIGATEWAY=https://127.0.0.1:8443/apiman-gateway
 ORG=demo
-SERVICE=CustomerCamelService
+SERVICE=CustomerService
 VERSION=oauth2
 URL=$APIGATEWAY/$ORG/$SERVICE/$VERSION
 
