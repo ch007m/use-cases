@@ -34,19 +34,16 @@
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-core</artifactId>
-            <version>${camel.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-spring</artifactId>
-            <version>${camel.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-cxf</artifactId>
-            <version>${camel.version}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -60,18 +57,6 @@
                 <exclusion>
                     <groupId>org.springframework</groupId>
                     <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-test-blueprint</artifactId>
-            <version>${camel.version}</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>org.apache.felix.fileinstall</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -117,14 +102,6 @@
             <version>1.3.6</version>
             <scope>provided</scope>
         </dependency>
-
-        <!-- ASM : used by Apache Aries Blueprint 1.0.1 & exclude asm 3.0 from camel-cxf -->
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-all</artifactId>
-            <version>5.0.3</version>
-            <scope>provided</scope>
-        </dependency>
         
         <!-- Swagger -->
         <dependency>
@@ -161,112 +138,6 @@
             <version>1.2.17</version>
             <scope>provided</scope>
         </dependency>
-
-        <!-- OSGI -->
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <!-- Dep required by Pax Web as OSGI Config Admin is not defined by PojoSR -->
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.metatype</artifactId>
-            <version>1.0.10</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.web</groupId>
-            <artifactId>pax-web-api</artifactId>
-            <version>3.2.3</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.web</groupId>
-            <artifactId>pax-web-spi</artifactId>
-            <version>3.2.3</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.web</groupId>
-            <artifactId>pax-web-runtime</artifactId>
-            <version>3.2.3</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.web</groupId>
-            <artifactId>pax-web-jetty</artifactId>
-            <version>3.2.3</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.web</groupId>
-            <artifactId>pax-web-extender-war</artifactId>
-            <version>3.2.3</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.web</groupId>
-            <artifactId>pax-web-extender-whiteboard</artifactId>
-            <version>3.2.3</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.base</groupId>
-            <artifactId>ops4j-base-lang</artifactId>
-            <version>1.5.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.swissbox</groupId>
-            <artifactId>pax-swissbox-core</artifactId>
-            <version>1.8.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.xbean</groupId>
-            <artifactId>xbean-bundleutils</artifactId>
-            <version>3.18</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.xbean</groupId>
-            <artifactId>xbean-reflect</artifactId>
-            <version>3.18</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.xbean</groupId>
-            <artifactId>xbean-finder</artifactId>
-            <version>3.18</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty.aggregate</groupId>
-            <artifactId>jetty-all-server</artifactId>
-            <version>8.1.17.v20150415</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-servlet_3.0_spec</artifactId>
-            <version>1.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.specs</groupId>
-            <artifactId>org.apache.servicemix.specs.activation-api-1.1</artifactId>
-            <version>2.4.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Unit -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -291,7 +162,7 @@
             <plugin>
                 <groupId>org.apache.camel</groupId>
                 <artifactId>camel-maven-plugin</artifactId>
-                <version>2.16-SNAPSHOT</version>
+                <version>${camel.version}</version>
                 <configuration>
                     <useBlueprint>false</useBlueprint>
                 </configuration>
@@ -413,10 +284,6 @@
             <id>Maven Central</id>
             <url>http://repo1.maven.org/maven2/</url>
         </repository>
-        <repository>
-            <id>Apache Snapshot</id>
-            <url>https://repository.apache.org/content/repositories/snapshots</url>
-        </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
@@ -437,10 +304,6 @@
         <pluginRepository>
             <id>jboss-fuse-ea</id>
             <url>https://repository.jboss.org/nexus/content/groups/ea</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>Apache Snapshot</id>
-            <url>https://repository.apache.org/content/repositories/snapshots</url>
         </pluginRepository>
     </pluginRepositories>
 
