@@ -2,9 +2,9 @@
 
 TOKEN=$(curl -X POST http://127.0.0.1:8080/auth/realms/stottie/protocol/openid-connect/token  -H "Content-Type: application/x-www-form-urlencoded" -d 'username=rincewind' -d 'password=apiman' -d 'grant_type=password' -d 'client_id=apiman' | jq -r '.access_token')
 APIGATEWAY=https://127.0.0.1:8443/apiman-gateway
-ORG=Newcastle
-SERVICE=CustomerService
-VERSION=2.0
+ORG=demo
+SERVICE=CustomerCamelService
+VERSION=oauth2
 URL=$APIGATEWAY/$ORG/$SERVICE/$VERSION
 
 echo ">>> Gateway Service $URL"
@@ -17,9 +17,9 @@ echo ">>> GET Customer : 123"
 http --verify=no GET $URL/123 "Authorization: Bearer $TOKEN"
 
 echo ">>> POST Customer : 124"
-
+ 
 echo '{"Customer":{"name":"DEMO"}}' | http --verify=no POST $URL "Authorization: Bearer $TOKEN"
-
+ 
 echo ">>> PUT Customer : 124"
 
 echo '{"Customer":{"id":124,"name":"DEMO2"}}' | http --verify=no PUT $URL "Authorization: Bearer $TOKEN"
