@@ -95,6 +95,9 @@ jvm 1.7
 2. Install the Keycloak APiman plugin
 -------------------------------------
 
+OAuth2 policy doesn’t appear in the standard list of policies in the Api manager UI;
+that’s because the OAuth2 policy is an example of an apiman plugin, all of which are shipped separately from apiman, but are trivially easy to install
+
 When logged into the [apiman manager UI](http://localhost:8080/apimanui/) as an administrator (for the quickstart that’s u:`admin`, p:`admin123!`), navigate to the manage plugins page:
 
 ![Apiman Keycloak plugin](image/sysadmin-manage-plugins.png)
