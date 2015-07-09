@@ -11,20 +11,12 @@
                   loggingFeatureEnabled="true">
         <cxf:providers>
             <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.json.JSONProvider"/>
-            <!-- Swagger writers -->
-            <bean id="resourceWriter" class="com.wordnik.swagger.jaxrs.listing.ResourceListingProvider" />
-            <bean id="apiWriter" class="com.wordnik.swagger.jaxrs.listing.ApiDeclarationProvider" />
         </cxf:providers>
-        <cxf:serviceBeans>
-            <!-- Swagger API listing resource -->
-            <bean id="swaggerResourceJSON" class="com.wordnik.swagger.jaxrs.listing.ApiListingResourceJSON" />
-            <bean id="cusromerService" class="com.redhat.gpe.demo.camel.CustomerServiceResource" />"
-        </cxf:serviceBeans>
     </cxf:rsServer>
 
     <bean id="customerServiceBean" class="com.redhat.gpe.demo.camel.CustomerServiceBean"/>
 
-    <camelContext trace="false" id="camel-rest-3" xmlns="http://camel.apache.org/schema/spring">
+    <camelContext trace="false" id="camel-spring-rest" xmlns="http://camel.apache.org/schema/spring">
 
         <route>
             <from uri="cxfrs:bean:rsServer"/>
