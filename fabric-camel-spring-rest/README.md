@@ -129,10 +129,10 @@ Service
 -------
 http://localhost:9090/rest/customerservice/customers/
 
-4. Extend the service to support Basic authentication
+5. Extend the service to support Basic authentication
 -----------------------------------------------------
 
-5. Extend the service to use Oauth2
+6. Extend the service to use Oauth2
 -----------------------------------
 
 Oauth
