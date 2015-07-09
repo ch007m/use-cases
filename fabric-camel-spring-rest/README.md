@@ -79,6 +79,11 @@ vn fabric8:deploy
 1. Installation of Apiman & Keycloak
 ------------------------------------
 
+ApiMan can be installed according to the instructions defined [here](http://www.apiman.io/latest/download.html). 
+Here is the list of the instructions to be executed in order to install wildfly 8.2 server and to deploy the different war (apiman, keycloak) part of the
+project
+
+```
 mkdir ~/apiman-1.1.3.Final
 cd ~/apiman-1.1.3.Final
 curl http://downloads.jboss.org/wildfly/8.2.0.Final/wildfly-8.2.0.Final.zip -o wildfly-8.2.0.Final.zip
@@ -90,7 +95,8 @@ unzip -o apiman-distro-wildfly8-1.1.3.Final-overlay.zip -d wildfly-8.2.0.Final
 cd wildfly-8.2.0.Final
 export JBOSS_HOME=~/MyApplications/apiman-1.1.3.Final/wildfly-8.2.0.Final
 jvm 1.7
-./bin/standalone.sh -c standalone-apiman.xml
+./bin/standalone.sh -c standalone-apiman.xml`
+```
 
 2. Install the Keycloak APiman plugin
 -------------------------------------
@@ -111,6 +117,13 @@ Artifact | apiman-plugins-keycloak-oauth-policy
 Version | 1.1.3.Final
 ```
 and add plugin. That’s it!
+
+3. Creation of the organization
+-------------------------------
+
+4. Creation of the service
+--------------------------
+
 
 Service
 -------
