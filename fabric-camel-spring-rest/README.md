@@ -1,6 +1,6 @@
 # Camel REST & CRUD Quickstart
 
-When the project is deployed into Fabric and that a container has been created with the profile `demo-camelrest`
+When the project is deployed into Fabric and that a Fuse container has been created with the profile `demo-camelrest`
 then you can access the REST service using the following curl/http requests
 
 ## Curl
@@ -71,10 +71,9 @@ http DELETE http://localhost:9090/rest/customerservice/customers/124
 ## Fabric
 
 The project must be deployed as a Fabric profile using the following maven command to be executed using a terminal
-within
 
 ```
-mvn fabric8:deploy
+vn fabric8:deploy
 ```
 
 1. Installation of Apiman & Keycloak
@@ -93,15 +92,22 @@ export JBOSS_HOME=~/MyApplications/apiman-1.1.3.Final/wildfly-8.2.0.Final
 jvm 1.7
 ./bin/standalone.sh -c standalone-apiman.xml
 
+2. Install the Keycloak APiman plugin
+-------------------------------------
 
-Plugin
-------
+When logged into the [apiman manager UI](http://localhost:8080/apimanui/) as an administrator (for the quickstart that’s u:`admin`, p:`admin123!`), navigate to the manage plugins page:
 
-io.apiman.plugins
+![Apiman Keycloak plugin](image/sysadmin-manage-plugins.png)
 
-apiman-plugins-keycloak-oauth-policy
+Select add plugin, fill in the details: 
 
-1.1.3.Final
+```
+GAV	| Value 
+Group | io.apiman.plugins
+Artifact | apiman-plugins-keycloak-oauth-policy
+Version | 1.1.3.Final
+```
+and add plugin. That’s it!
 
 Service
 -------
