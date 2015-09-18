@@ -18,21 +18,24 @@
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <version>4.3.1</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
             <version>4.3.1</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.scr.annotations</artifactId>
             <version>1.9.8</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.framework</artifactId>
-            <version>4.4.1</version>
+            <groupId>org.ops4j.pax.logging</groupId>
+            <artifactId>pax-logging-api</artifactId>
+            <version>1.8.1</version>
         </dependency>
     </dependencies>
 
@@ -51,7 +54,6 @@
                             org.osgi.framework,
                             *
                         </Import-Package>
-<!--                        <Service-Component>OSGI-INF/my.cool.logging.LoggingService.xml</Service-Component>-->
                         <!-- <Bundle-Activator>my.cool.logging.Collector</Bundle-Activator>-->
                     </instructions>
                 </configuration>

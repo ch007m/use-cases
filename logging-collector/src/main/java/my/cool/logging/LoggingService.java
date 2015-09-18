@@ -1,39 +1,59 @@
 package my.cool.logging;
 
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Reference;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Deactivate;
+import org.apache.felix.scr.annotations.*;
+import org.ops4j.pax.logging.spi.PaxAppender;
+import org.ops4j.pax.logging.spi.PaxLoggingEvent;
 import org.osgi.service.log.LogReaderService;
 import org.osgi.service.log.LogService;
 
 @Component(description = "My Logging Service", immediate = true)
-public class LoggingService {
+@Service(PaxAppender.class)
+@Properties({
+        @Property(name = "org.ops4j.pax.logging.appender.name", value = "cool")
+})
+public class LoggingService implements PaxAppender {
 
     @Reference(referenceInterface = LogService.class)
-    LogService logger;
-    
+    LogService LOGGER;
+
     @Reference(referenceInterface = LogReaderService.class)
     LogReaderService reader;
-    
-/*    private static Integer INFO = Integer.parseInt(LogLevel.INFO.name());
-    private static Integer DEBUG = Integer.parseInt(LogLevel.DEBUG.name());
-    private static Integer WARNING = Integer.parseInt(LogLevel.WARNING.name());
-    private static Integer ERROR = Integer.parseInt(LogLevel.ERROR.name());*/
+
+    private static Integer INFO = LogLevel.getLogLevel(LogLevel.INFO);
+    private static Integer DEBUG = LogLevel.getLogLevel(LogLevel.DEBUG);
+    private static Integer WARNING = LogLevel.getLogLevel(LogLevel.WARNING);
+    private static Integer ERROR = LogLevel.getLogLevel(LogLevel.ERROR);
 
     private LogWriter m_console = new LogWriter();
 
     @Activate
-    public void start() {
-        logger.log(3,"Logging Service started");
-        System.out.println("Logging Service started");
-        reader.addLogListener(m_console);
+    public void activate() {
+        LOGGER.log(INFO, "Logging Service started");
+        //reader.addLogListener(m_console);
     }
 
     @Deactivate
-    public void stop() {
-        logger.log(3,"Logging Service stopped");
-        System.out.println("Logging Service stopped");
-        reader.removeLogListener(m_console);
+    public void deactivate() {
+        LOGGER.log(INFO, "Logging Service stopped");
+        //reader.removeLogListener(m_console);
+    }
+
+    @Override
+    public void doAppend(final PaxLoggingEvent log) {
+        StringBuffer str = new StringBuffer();
+
+        str.append("APPENDER :: ");
+        str.append(LogLevel.getLogName(3) + ": '" + log.getMessage() + "')");
+        str.append(" - Local info : ");
+        str.append(log.getLocationInformation());
+        if (log.getThrowableStrRep() != null) {
+            str.append("\n");
+            String[] stack = log.getThrowableStrRep();
+            for (String traceElement : stack) {
+                str.append("\n");
+                str.append("        " + traceElement);
+            }
+        }
+        System.out.println(str.toString());
     }
 }
