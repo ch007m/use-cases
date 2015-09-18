@@ -39,5 +39,6 @@
         <module>quickstart-camel-rest</module>
         <module>fabric-camel-spring-rest</module>
         <module>fabric-camel-blueprint-rest</module>
+        <module>logging-collector</module>
     </modules>
 </project>
