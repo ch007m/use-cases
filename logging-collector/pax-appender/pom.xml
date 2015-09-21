@@ -10,7 +10,8 @@
     </parent>
 
     <artifactId>pax-appender</artifactId>
-    <name>Demo :: OSGI :: Pax Appender</name>
+    <name>Demo :: OSGI :: Logging Pax Appender</name>
+    <packaging>bundle</packaging>
 
     <dependencies>
         <dependency>

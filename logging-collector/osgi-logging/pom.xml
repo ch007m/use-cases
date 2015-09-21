@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>osgi-logging</artifactId>
-    <name>Demo :: OSGI :: Logging</name>
+    <name>Demo :: OSGI :: Logging OSGI</name>
 
     <dependencies>
         <dependency>
