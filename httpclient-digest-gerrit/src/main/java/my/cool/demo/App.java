@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.ConnectException;
 
 public class App {
 
@@ -77,6 +78,8 @@ public class App {
             e.printStackTrace();
         } catch (AuthenticationException e) {
             e.printStackTrace();
+        } catch (ConnectException e) {
+            System.out.println("Gerrit Server is not responding");
         } catch (HttpResponseException e) {
             System.out.println("Response from Gerrit Server : " + e.getMessage());
         } finally {
