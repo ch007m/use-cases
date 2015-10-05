@@ -4,6 +4,7 @@ import org.apache.http.*;
 import org.apache.http.auth.*;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -117,7 +118,7 @@ public class App {
 
         DefaultHttpClient httpclient = new DefaultHttpClient();
         DefaultHttpClient httpclient2 = new DefaultHttpClient();
-        HttpGet httpget = new HttpGet("http://localhost:8080/a/projects/demo");
+        HttpGet httpget = new HttpGet("http://localhost:8080/a/projects/demo44");
         System.out.println("Requesting : " + httpget.getURI());
 
         try {
@@ -150,6 +151,8 @@ public class App {
             e.printStackTrace();
         } catch (AuthenticationException e) {
             e.printStackTrace();
+        } catch (HttpResponseException e) {
+            System.out.println("Response from Gerrit Server : " + e.getMessage());
         } finally {
             httpclient.getConnectionManager().shutdown();
             httpclient2.getConnectionManager().shutdown();
