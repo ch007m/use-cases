@@ -1,11 +1,14 @@
 package my.cool.demo;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.*;
 import org.apache.http.auth.*;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.DigestScheme;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -19,8 +22,9 @@ public class App {
     public static void main(String[] args) throws IOException, AuthenticationException {
 
         Logger LOG = LoggerFactory.getLogger(App.class);
-
-        String GERRIT_URL = "http://localhost:8080/a/projects/demo46";
+        
+        String repoName = "dabou56";
+        String GERRIT_URL = "http://localhost:8080/a/projects" + "/" + repoName;
 
         DefaultHttpClient httpclient = new DefaultHttpClient();
         DefaultHttpClient httpclientPost = new DefaultHttpClient();
@@ -50,6 +54,19 @@ public class App {
 
                 HttpPost httpPost = new HttpPost(GERRIT_URL);
                 httpPost.addHeader(digestScheme.authenticate(creds, httpPost));
+                httpPost.addHeader("Content-Type", "application/json");
+
+                CreateRepositoryDTO createRepoDTO = new CreateRepositoryDTO();
+                createRepoDTO.setDescription("my cool git repo");
+                createRepoDTO.setName(repoName);
+                createRepoDTO.setCreate_empty_commit(Boolean.valueOf(false));
+                
+                ObjectMapper mapper = new ObjectMapper();
+                String json = mapper.writeValueAsString(createRepoDTO);
+
+                HttpEntity entity = new StringEntity(json);
+                httpPost.setEntity(entity);
+                
 
                 ResponseHandler<String> responseHandler = new BasicResponseHandler();
                 String responseBody = httpclientPost.execute(httpPost, responseHandler);
