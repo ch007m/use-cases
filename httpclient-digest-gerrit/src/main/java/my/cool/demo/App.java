@@ -23,7 +23,7 @@ public class App {
 
         Logger LOG = LoggerFactory.getLogger(App.class);
         
-        String repoName = "dabou56";
+        String repoName = "dabou57";
         String GERRIT_URL = "http://localhost:8080/a/projects" + "/" + repoName;
 
         DefaultHttpClient httpclient = new DefaultHttpClient();
@@ -50,10 +50,10 @@ public class App {
                 digestScheme.processChallenge(authHeader);
 
                 UsernamePasswordCredentials creds = new UsernamePasswordCredentials("admin", "secret");
-                httpget.addHeader(digestScheme.authenticate(creds, httpget));
+                httpget.addHeader(digestScheme.authenticate(creds, httpget, null));
 
                 HttpPost httpPost = new HttpPost(GERRIT_URL);
-                httpPost.addHeader(digestScheme.authenticate(creds, httpPost));
+                httpPost.addHeader(digestScheme.authenticate(creds, httpPost, null));
                 httpPost.addHeader("Content-Type", "application/json");
 
                 CreateRepositoryDTO createRepoDTO = new CreateRepositoryDTO();
