@@ -40,5 +40,6 @@
         <module>fabric-camel-spring-rest</module>
         <module>fabric-camel-blueprint-rest</module>
         <module>logging-collector</module>
+        <module>httpclient-digest-gerrit</module>
     </modules>
 </project>
