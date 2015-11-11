@@ -3,8 +3,12 @@ package my.cool.vertx;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.net.JksOptions;
+import io.vertx.core.net.NetClient;
 import io.vertx.core.net.NetClientOptions;
 import io.vertx.core.net.NetSocket;
 import io.vertx.ext.unit.Async;
@@ -15,9 +19,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 @RunWith(VertxUnitRunner.class) public class MyFirstVerticleTest {
 
     private Vertx vertx;
+    private NetClient netClient;
+    private HttpClient client;
 
     @Before public void setUp(TestContext context) {
         vertx = Vertx.vertx();
@@ -28,30 +37,31 @@ import org.junit.runner.RunWith;
         vertx.close(context.asyncAssertSuccess());
     }
 
+
     @Test public void testMyApplication(TestContext context) {
         
         final Async async = context.async();
 
         NetClientOptions opts = new NetClientOptions()
                 .setSsl(true)
-                .setTrustAll(true);
+                .setTrustAll(true)
+                .setConnectTimeout(2000);
 
-        vertx.createNetClient(opts).connect(8888, "localhost", res -> {
+        netClient = vertx.createNetClient(opts);
+        netClient.connect(8888, "localhost", res -> {
             if (res.succeeded()) {
-                System.out.println("Connected!");
-                NetSocket socket = res.result();
-                socket.handler(body -> {
-                    context.assertTrue(body.toString().contains("Helloooo"));
-                });
+            NetSocket socket = res.result();
+            socket.write("This is a HTTP Client message");
+            socket.handler(resp -> {
+                System.out.println("I get a response : " + resp.toString());
+                context.assertTrue(resp.toString().contains("Hello"));
+            });
+            async.complete();
             } else {
                 System.out.println("Failed to connect: " + res.cause().getMessage());
+                context.fail();
             }
-            async.complete();
         });
-           /* response.result().handler(body -> {
-                //context.assertTrue(body.toString().contains("Hello"));
-                async.complete();
-            });
-        });*/
+
     }
 }
