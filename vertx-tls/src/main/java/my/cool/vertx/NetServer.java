@@ -1,13 +1,10 @@
 package my.cool.vertx;
 
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.net.JksOptions;
-import io.vertx.core.net.NetServer;
 import io.vertx.core.net.NetServerOptions;
-import io.vertx.core.net.NetSocket;
 
-public class HttpsServer {
+public class NetServer {
 
     public static void main(String[] args) {
         Vertx vertx = Vertx.vertx();
@@ -17,7 +14,7 @@ public class HttpsServer {
                         new JksOptions().setPath(
                                 "/Users/chmoulli/MyProjects/use-cases/vertx-tls/src/main/resources/keystore.jks")
                                 .setPassword("dabou456"));
-        NetServer server = vertx.createNetServer(options);
+        io.vertx.core.net.NetServer server = vertx.createNetServer(options);
         server.connectHandler(socket -> {
             socket.handler(buffer -> {
                 System.out.println("I received some bytes: " + buffer.length());
