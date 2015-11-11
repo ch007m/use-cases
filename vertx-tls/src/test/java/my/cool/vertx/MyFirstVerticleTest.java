@@ -29,20 +29,29 @@ import org.junit.runner.RunWith;
     }
 
     @Test public void testMyApplication(TestContext context) {
+        
         final Async async = context.async();
 
         NetClientOptions opts = new NetClientOptions()
                 .setSsl(true)
-                .setTrustAll(true)
-                .setKeyStoreOptions(
-                    new JksOptions()
-                       .setPath("/Users/chmoulli/MyProjects/use-cases/vertx-tls/src/main/resources/client.jks")
-                       .setPassword("dabou456"));
+                .setTrustAll(true);
 
-        vertx.createNetClient(opts).connect(8888, "localhost", new Handler<AsyncResult<NetSocket>>() {
-            @Override public void handle(AsyncResult<NetSocket> event) {
-                async.complete();
+        vertx.createNetClient(opts).connect(8888, "localhost", res -> {
+            if (res.succeeded()) {
+                System.out.println("Connected!");
+                NetSocket socket = res.result();
+                socket.handler(body -> {
+                    context.assertTrue(body.toString().contains("Helloooo"));
+                });
+            } else {
+                System.out.println("Failed to connect: " + res.cause().getMessage());
             }
+            async.complete();
         });
+           /* response.result().handler(body -> {
+                //context.assertTrue(body.toString().contains("Hello"));
+                async.complete();
+            });
+        });*/
     }
 }

@@ -9,9 +9,8 @@ public class MyFirstVerticle extends AbstractVerticle {
     HttpServerOptions sslOptions = new HttpServerOptions()
             .setHost("localhost")
             .setSsl(true)
-            .setKeyStoreOptions(
-                new JksOptions()
-                    .setPath("/Users/chmoulli/MyProjects/use-cases/vertx-tls/src/main/resources/server.jks")
+            .setKeyStoreOptions(new JksOptions().setPath(
+                    "/Users/chmoulli/MyProjects/use-cases/vertx-tls/src/main/resources/keystore.jks")
                     .setPassword("dabou456"));
 
     @Override
