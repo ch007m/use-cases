@@ -41,5 +41,6 @@
         <module>fabric-camel-blueprint-rest</module>
         <module>logging-collector</module>
         <module>httpclient-digest-gerrit</module>
+        <module>vertx-tls</module>
     </modules>
 </project>
