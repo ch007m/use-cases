@@ -1,6 +1,7 @@
 # Info
 
 http://ruchirawageesha.blogspot.ch/2010/07/how-to-create-clientserver-keystores.html
+http://keystore-explorer.sourceforge.net/
 
 # Generate Public & Private keys for client & server
 keytool -genkey -alias server -keyalg RSA -keystore server.jks -storepass dabou456
@@ -21,3 +22,6 @@ keytool -printcert -v -file client.cert
 
 # Create a self signed certificate
 keytool -import -v -trustcacerts -alias server-alias -file server.cer -keystore cacerts.jks -keypass dabou456 -storepass dabou456
+
+# List trusted cacerts
+keytool -list -v -keystore $JAVA_HOME/jre/lib/security/cacerts --storepass changeit

@@ -26,6 +26,7 @@ public class MyHttpClient {
             System.out.println("Message : " + resp.statusMessage());
             resp.bodyHandler(buff -> {
                 System.out.println("Body length : " + buff.length());
+                System.out.println("Response : " + buff.toString());
             });
         });
         // Now do stuff with the request
