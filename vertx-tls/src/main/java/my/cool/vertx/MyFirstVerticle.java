@@ -14,7 +14,7 @@ public class MyFirstVerticle extends AbstractVerticle {
                 .setSsl(true)
                 .setKeyStoreOptions(
                         new JksOptions().setPath(
-                                "/Users/chmoulli/MyProjects/use-cases/vertx-tls/src/main/resources/keystore.jks")
+                                "/Users/chmoulli/MyProjects/use-cases/vertx-tls/src/main/resources/server.jks")
                                 .setPassword("dabou456"));
         
         NetServer server = vertx.createNetServer(options);

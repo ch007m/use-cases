@@ -20,7 +20,7 @@ public class MyHttpServer {
         Vertx vertx = Vertx.vertx();
         HttpServerOptions options = new HttpServerOptions().setSsl(true).setKeyStoreOptions(new JksOptions()
                         .setPath(
-                                "/Users/chmoulli/MyProjects/use-cases/vertx-tls/src/main/resources/keystore.jks")
+                                "/Users/chmoulli/MyProjects/use-cases/vertx-tls/src/main/resources/server.jks")
                         .setPassword("dabou456"));
 
         vertx.createHttpServer(options).requestHandler(req -> {
