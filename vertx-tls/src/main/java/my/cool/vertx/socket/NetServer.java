@@ -1,4 +1,4 @@
-package my.cool.vertx;
+package my.cool.vertx.socket;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.net.JksOptions;

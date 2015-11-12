@@ -1,4 +1,4 @@
-package my.cool.vertx;
+package my.cool.vertx.verticle;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpServerOptions;
@@ -7,6 +7,8 @@ import io.vertx.core.net.NetServer;
 import io.vertx.core.net.NetServerOptions;
 
 public class MyFirstVerticle extends AbstractVerticle {
+    
+    private NetServer server;
 
     @Override
     public void start() {
@@ -17,7 +19,7 @@ public class MyFirstVerticle extends AbstractVerticle {
                                 "/Users/chmoulli/MyProjects/use-cases/vertx-tls/src/main/resources/server.jks")
                                 .setPassword("dabou456"));
         
-        NetServer server = vertx.createNetServer(options);
+        server = vertx.createNetServer(options);
         server.connectHandler(socket -> {
             socket.handler(buffer -> {
                 System.out.println("I received some bytes: " + buffer.length());
@@ -30,5 +32,10 @@ public class MyFirstVerticle extends AbstractVerticle {
             });
         });
         server.listen(8888);
+    }
+    
+    @Override
+    public void stop() {
+        server.close();
     }
 }

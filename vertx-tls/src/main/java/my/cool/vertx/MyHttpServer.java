@@ -30,8 +30,7 @@ public class MyHttpServer {
             System.out.println("Header - host : " + map.get("Host"));
             if (req.method() == HttpMethod.GET) {
                 System.out.println("GET request received");
-                resp.setChunked(true);
-                resp.write("Get Method has been called").end();
+                resp.setChunked(true).write("Get Method has been called").end();
             } else {
                 resp.setStatusCode(400).end();
             }
