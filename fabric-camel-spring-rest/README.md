@@ -93,7 +93,7 @@ rm -rf wildfly-8.2.0.Final
 unzip wildfly-8.2.0.Final.zip
 unzip -o apiman-distro-wildfly8-1.1.3.Final-overlay.zip -d wildfly-8.2.0.Final
 cd wildfly-8.2.0.Final
-export JBOSS_HOME=~/MyApplications/apiman-1.1.3.Final/wildfly-8.2.0.inal
+export JBOSS_HOME=~/MyApplications/apiman-1.1.3.Final/wildfly-8.2.0.Final
 jvm 1.7
 ./bin/standalone.sh -c standalone-apiman.xml`
 ```
