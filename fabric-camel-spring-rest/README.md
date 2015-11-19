@@ -64,8 +64,8 @@ The project can work locally using the camel:run plugin and the curl or httpie c
 ## Summary of the HTTPie commands
 
 http GET http://localhost:9090/rest/customerservice/customers/123
-echo '{"Customer":{"name":"TUG"}}' | http POST http://localhost:9090/rest/customerservice/customers
-echo '{"Customer":{"id":124,"name":"TUG2"}}' | http PUT http://localhost:9090/rest/customerservice/customers
+echo '{"Customer":{"name":"RSA"}}' | http POST http://localhost:9090/rest/customerservice/customers
+echo '{"Customer":{"id":124,"name":"RSA2"}}' | http PUT http://localhost:9090/rest/customerservice/customers
 http DELETE http://localhost:9090/rest/customerservice/customers/124
  
 ## Fabric
@@ -97,6 +97,24 @@ export JBOSS_HOME=~/MyApplications/apiman-1.1.3.Final/wildfly-8.2.0.Final
 jvm 1.7
 ./bin/standalone.sh -c standalone-apiman.xml`
 ```
+
+2. Alternative setup
+--------------------
+
+rm -rf wildfly-8.2.0.Final
+unzip wildfly-8.2.0.Final.zip
+unzip -o apiman-distro-wildfly8-1.1.9.Final-overlay.zip -d wildfly-8.2.0.Final
+cd wildfly-8.2.0.Final
+export JBOSS_HOME=$(pwd)
+./bin/standalone.sh -c standalone-apiman.xml
+
+API endpoint : http://localhost:9090/rest/customerservice
+Organisation : fuse
+Service name : customer-service
+Use policy : Basic Authentication
+
+http --verify=no -a charles:demooo https://localhost:8443/apiman-gateway/fuse/customer-service/1.0/customers/123
+http --verify=no -a charles:demo https://localhost:8443/apiman-gateway/fuse/customer-service/1.0/customers/123
 
 2. Install the Keycloak APiman plugin
 -------------------------------------
