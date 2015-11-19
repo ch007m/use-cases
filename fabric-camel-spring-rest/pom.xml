@@ -14,7 +14,6 @@
         <cxf.version>3.0.4.redhat-621071</cxf.version>
         <camel.version>2.15.1.redhat-621071</camel.version>
         <slf4j.version>1.6.6</slf4j.version>
-
         <jboss.fuse.bom.version>6.2.1.redhat-071</jboss.fuse.bom.version>
     </properties>
     
