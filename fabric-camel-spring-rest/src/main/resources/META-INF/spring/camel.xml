@@ -3,15 +3,23 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
           http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd">
 
-    <!-- address="http://localhost:9090/rest" -->
-    <!-- address="/rest"-->
     <cxf:rsServer id="rsServer"
-                  address="http://localhost:9090/rest"
+                  address="/rest"
                   serviceClass="com.redhat.gpe.demo.camel.CustomerServiceResource"
                   loggingFeatureEnabled="true">
         <cxf:providers>
             <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.json.JSONProvider"/>
         </cxf:providers>
+        <cxf:outInterceptors>
+            <bean class="com.redhat.gpe.demo.camel.EnableCORSInterceptor"/>
+        </cxf:outInterceptors>
+        <cxf:features>
+            <bean class="io.fabric8.cxf.endpoint.SwaggerFeature">
+                <property name="title" value="Fabric8:CXF:Quickstarts - Customer Service" />
+                <property name="description" value="Sample REST-based Customer Service" />
+                <property name="version" value="${project.version}" />
+            </bean>
+        </cxf:features>
     </cxf:rsServer>
 
     <bean id="customerServiceBean" class="com.redhat.gpe.demo.camel.CustomerServiceBean"/>
@@ -40,5 +48,4 @@
             </choice>
         </route>
     </camelContext>
-
 </beans>

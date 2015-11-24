@@ -113,8 +113,14 @@ Organisation : fuse
 Service name : customer-service
 Use policy : Basic Authentication
 
+http GET http://localhost:9090/rest/customerservice/customers/123
+echo '{"Customer":{"name":"RSA"}}' | http POST http://localhost:9090/rest/customerservice/customers
+echo '{"Customer":{"id":124,"name":"RSA2"}}' | http PUT http://localhost:9090/rest/customerservice/customers
+http DELETE http://localhost:9090/rest/customerservice/customers/124
+
 http --verify=no -a charles:demooo https://localhost:8443/apiman-gateway/fuse/customer-service/1.0/customers/123
 http --verify=no -a charles:demo https://localhost:8443/apiman-gateway/fuse/customer-service/1.0/customers/123
+
 
 2. Install the Keycloak APiman plugin
 -------------------------------------
