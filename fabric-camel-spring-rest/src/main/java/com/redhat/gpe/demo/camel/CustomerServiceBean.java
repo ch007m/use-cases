@@ -44,7 +44,7 @@ public class CustomerServiceBean {
             System.out.println("Customer is null: " + (c == null));
             response = Response.status(Response.Status.NOT_FOUND).entity("<error>Could not find customer</error>").build();
         } else {
-            response = Response.status(Response.Status.FOUND).entity(c).build();
+            response = Response.status(Response.Status.OK).entity(c).build();
         }
 
         return response;
