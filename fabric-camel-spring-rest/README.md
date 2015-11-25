@@ -69,16 +69,25 @@ echo '{"Customer":{"name":"RSA"}}' | http POST http://localhost:9090/rest/custom
 echo '{"Customer":{"id":124,"name":"RSA2"}}' | http PUT http://localhost:9090/rest/customerservice/customers
 http DELETE http://localhost:9090/rest/customerservice/customers/124
 ```
+
+## JBoss Fuse & Features deployment
+
+Open the JBoss fuse console and deploy the features file of the project
+
+```
+features:addurl mvn:com.redhat.demo/fabric-camel-rest/1.0/xml/features
+features:install demo
+```
  
 ## Fabric
 
-The project must be deployed as a Fabric profile using the following maven command to be executed using a terminal
+The project must be compiled `mvn clean install`, a Fabric profile created using the following maven command to be executed using a terminal
 
 ```
 mvn fabric8:deploy
 ```
 
-and deployed into JBoss Fuse
+and finally deployed into JBoss Fuse
 
 ```
 fabric:create -m 127.0.0.1 -r manualip

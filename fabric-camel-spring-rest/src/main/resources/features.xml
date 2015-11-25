@@ -1,0 +1,10 @@
+<features name="my-repo" xmlns="http://karaf.apache.org/xmlns/features/v1.1.0">
+    <feature name="demo" version="1.0">
+        <feature>camel-cxf</feature>
+        <feature>cxf-jaxrs</feature>
+        <feature>war</feature>
+        <feature>swagger</feature>
+        <feature>fabric-cxf-registry</feature>
+        <bundle>mvn:com.redhat.demo/fabric-camel-rest/1.0</bundle>
+    </feature>
+</features>
