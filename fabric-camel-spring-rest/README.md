@@ -63,10 +63,12 @@ The project can work locally using the camel:run plugin and the curl or httpie c
 
 ## Summary of the HTTPie commands
 
+```
 http GET http://localhost:9090/rest/customerservice/customers/123
 echo '{"Customer":{"name":"RSA"}}' | http POST http://localhost:9090/rest/customerservice/customers
 echo '{"Customer":{"id":124,"name":"RSA2"}}' | http PUT http://localhost:9090/rest/customerservice/customers
 http DELETE http://localhost:9090/rest/customerservice/customers/124
+```
  
 ## Fabric
 
