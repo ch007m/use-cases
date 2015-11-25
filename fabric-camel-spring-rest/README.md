@@ -106,6 +106,15 @@ fabric:container-add-profile root insight-elasticsearch.datastore insight-logs.e
 fabric:container-add-profile rest insight-camel insight-logs.elasticsearch insight-metrics.elasticsearch
 ```
 
+Search about camel records
+
+Request `http://127.0.0.1:9200/_search?q=_type:camel&size=10&pretty=true`
+
+Using httpie tool
+
+```
+http GET http://127.0.0.1:9200/_search q=='_type:camel' size==1 pretty==true
+```
 
 ## Secure the Apache Camel & CXF endpoint using Apiman
 
