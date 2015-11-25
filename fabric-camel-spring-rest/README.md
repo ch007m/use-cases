@@ -68,6 +68,9 @@ http GET http://localhost:9090/rest/customerservice/customers/123
 echo '{"Customer":{"name":"RSA"}}' | http POST http://localhost:9090/rest/customerservice/customers
 echo '{"Customer":{"id":124,"name":"RSA2"}}' | http PUT http://localhost:9090/rest/customerservice/customers
 http DELETE http://localhost:9090/rest/customerservice/customers/124
+
+for i in {1..10}; do http GET http://localhost:9090/rest/customerservice/customers/123; done
+for i in {1..5}; do http GET http://localhost:9090/rest/customerservice/customers/zzz; done
 ```
 
 ## JBoss Fuse & Features deployment
@@ -79,7 +82,7 @@ features:addurl mvn:com.redhat.demo/fabric-camel-rest/1.0/xml/features
 features:install demo
 ```
  
-## Fabric
+## JBoss Fuse Fabric
 
 The project must be compiled `mvn clean install`, a Fabric profile created using the following maven command to be executed using a terminal
 
@@ -95,6 +98,16 @@ fabric:container-create-child root rest
 fabric:container-add-profile rest demo-camelrest
 fabric:container-remove-profile rest demo-camelrest
 ```
+
+## Collect logs & metrics
+
+```
+fabric:container-add-profile root insight-elasticsearch.datastore insight-logs.elasticsearch insight-metrics.elasticsearch insight-console
+fabric:container-add-profile rest insight-camel insight-logs.elasticsearch insight-metrics.elasticsearch
+```
+
+
+## Secure the Apache Camel & CXF endpoint using Apiman
 
 1. Installation of Apiman & Keycloak
 ------------------------------------
