@@ -8,7 +8,8 @@
                   serviceClass="com.redhat.gpe.demo.camel.CustomerServiceResource"
                   loggingFeatureEnabled="true">
         <cxf:providers>
-            <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+            <bean id="jsonProvider" class="org.apache.cxf.jaxrs.provider.json.JSONProvider"/>
+            <!-- <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/> -->
         </cxf:providers>
         <cxf:outInterceptors>
             <bean class="com.redhat.gpe.demo.camel.EnableCORSInterceptor"/>
