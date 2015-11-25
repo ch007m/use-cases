@@ -76,6 +76,15 @@ The project must be deployed as a Fabric profile using the following maven comma
 mvn fabric8:deploy
 ```
 
+and deployed into JBoss Fuse
+
+```
+fabric:create -m 127.0.0.1 -r manualip
+fabric:container-create-child root rest
+fabric:container-add-profile rest demo-camelrest
+fabric:container-remove-profile rest demo-camelrest
+```
+
 1. Installation of Apiman & Keycloak
 ------------------------------------
 
