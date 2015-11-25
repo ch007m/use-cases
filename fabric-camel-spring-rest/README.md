@@ -115,7 +115,11 @@ Using httpie tool
 ```
 http GET http://127.0.0.1:9200/_search q=='_type:camel' size==1 pretty==true
 echo '{"_source": ["host","exchange.routeId","exchange.in.body"],"query": {"query_string": {"query": "host:rest AND Completed AND deleteCustomer"}}}' | http GET http://127.0.0.1:9200/_search pretty==true
-echo '{"query" : { "query_string": { "query": "_type:sta-camel" } }}' | http GET http://127.0.0.1:9200/insight-*/_search pretty==true
+http GET http://127.0.0.1:9200/insight-*/_search q=='_type:sta-camel' pretty==true
+http -v GET http://127.0.0.1:9200/insight-*/_search q=='_type:sta-camel AND @timestamp:[2015-11-25 TO 2015-11-25]' pretty==true
+http -v GET http://127.0.0.1:9200/insight-*/_search q=='_type:sta-camel AND @timestamp:[now-4h TO now]' pretty==true
+http -v GET http://127.0.0.1:9200/insight-*/_search q=='_type:sta-camel AND @timestamp:[now-10M/M TO now]' pretty==true
+
 ```
 
 ## Secure the Apache Camel & CXF endpoint using Apiman

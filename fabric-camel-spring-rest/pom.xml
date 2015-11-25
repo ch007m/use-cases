@@ -90,12 +90,16 @@
         </dependency>
 
         <dependency>
-            <groupId>io.hawt</groupId>
-            <artifactId>hawtio-web</artifactId>
-            <version>1.4.redhat-621071</version>
-            <type>war</type>
-            <scope>provided</scope>
+            <groupId>org.elasticsearch</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>1.3.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>4.9.0</version>
+        </dependency>
+
 
         <!-- JSON Provider -->
         <dependency>
