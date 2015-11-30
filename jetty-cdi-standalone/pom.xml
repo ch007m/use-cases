@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>parent</artifactId>
+        <groupId>my.cool.demo</groupId>
+        <version>1.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>jetty-cdi-standalone</artifactId>
+    <packaging>bundle</packaging>
+    <name>Demo :: Jetty &amp; CDI :: Standalone</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>8.1.16.v20140903</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.7</version>
+                <extensions>true</extensions>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>jetty-cdi-demo</Bundle-SymbolicName>
+                        <Import-Package>
+                            javax.naming,
+                            org.eclipse.jetty.jndi,
+                            org.eclipse.jetty.servlet.listener,
+                            javax.enterprise.inject.spi,
+                            *
+                        </Import-Package>
+                        <Require-Capability>
+                            org.ops4j.pax.cdi.extension;filter:="(&amp;(extension=pax-cdi-extension)(version>=0.11)(!(version>=0.12)))",
+                            osgi.extender;filter:="(osgi.extender=pax.cdi)",
+                            osgi.ee;filter:="(&amp;(osgi.ee=JavaSE)(version=1.6))"
+                        </Require-Capability>
+                        <Bundle-Activator>my.cool.demo.LauncherBundle</Bundle-Activator>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
+    <!-- minimal set of dependencies -->
+    <dependencies>
+        <!-- the jetty version we'll use -->
+        <dependency>
+            <groupId>org.eclipse.jetty.aggregate</groupId>
+            <artifactId>jetty-all-server</artifactId>
+            <version>8.0.4.v20111024</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- we'll use this version of Weld -->
+        <dependency>
+            <groupId>org.jboss.weld.servlet</groupId>
+            <artifactId>weld-servlet</artifactId>
+            <version>2.3.0.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-core</artifactId>
+            <version>2.3.0.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld.se</groupId>
+            <artifactId>weld-se</artifactId>
+            <version>2.3.0.Final</version>
+        </dependency>
+
+        <!-- normally following are provided, but not if you run within jetty -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <type>jar</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.10</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <artifactId>el-api</artifactId>
+            <groupId>javax.el</groupId>
+            <version>2.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.deltaspike.core</groupId>
+            <artifactId>deltaspike-core-api</artifactId>
+            <version>1.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.deltaspike.cdictrl</groupId>
+            <artifactId>deltaspike-cdictrl-weld</artifactId>
+            <version>1.5.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>fusesource-public-repository</id>
+            <name>FuseSource Release Repository</name>
+            <url>http://repository.jboss.org/nexus/content/repositories/fs-public/</url>
+        </repository>
+        <repository>
+            <id>jboss-public-repository</id>
+            <name>JBoss.org Public Maven Repository Group</name>
+            <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+        </repository>
+        <repository>
+            <id>jboss-fuse-ea</id>
+            <url>http://repository.jboss.org/nexus/content/groups/ea</url>
+        </repository>
+        <repository>
+            <id>jboss-releases</id>
+            <name>JBoss.org Fuse Releases</name>
+            <url>http://repository.jboss.org/nexus/content/repositories/fs-releases/</url>
+        </repository>
+        <repository>
+            <id>Maven Central</id>
+            <url>http://repo1.maven.org/maven2/</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>fusesource-public-repository</id>
+            <name>FuseSource Release Repository</name>
+            <url>http://repository.jboss.org/nexus/content/repositories/fs-public/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>jboss-public-repository-group</id>
+            <name>JBoss.org Public Maven Repository Group</name>
+            <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>jboss-fuse-releases</id>
+            <name>JBoss.org Fuse Releases</name>
+            <url>http://repository.jboss.org/nexus/content/repositories/fs-releases</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>jboss-fuse-ea</id>
+            <url>http://repository.jboss.org/nexus/content/groups/ea</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+</project>

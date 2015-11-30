@@ -42,5 +42,6 @@
         <module>logging-collector</module>
         <module>httpclient-digest-gerrit</module>
         <module>vertx-tls</module>
+        <module>jetty-cdi-standalone</module>
     </modules>
 </project>

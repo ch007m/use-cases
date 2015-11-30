@@ -3,6 +3,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
           http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd">
 
+    <!-- address="http://localhost:9090/rest" -->
     <cxf:rsServer id="rsServer"
                   address="http://localhost:9090/rest"
                   serviceClass="com.redhat.gpe.demo.camel.CustomerServiceResource"

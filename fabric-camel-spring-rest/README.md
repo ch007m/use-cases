@@ -26,7 +26,7 @@ then you can access the REST service using the following curl/http requests
   * Delete
 
  ```
- curl -X DEL http://localhost:8080/rest/customerservice/customers/124
+ curl -X DEL http://localhost:9090/rest/customerservice/customers/124
  ```
 
 ## HTTPie
