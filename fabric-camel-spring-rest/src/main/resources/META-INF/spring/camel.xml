@@ -5,7 +5,7 @@
 
     <!-- address="http://localhost:9090/rest" -->
     <cxf:rsServer id="rsServer"
-                  address="http://localhost:9090/rest"
+                  address="/rest"
                   serviceClass="com.redhat.gpe.demo.camel.CustomerServiceResource"
                   loggingFeatureEnabled="true">
         <cxf:providers>
