@@ -36,5 +36,10 @@
         <servlet-name>hello</servlet-name>
         <url-pattern>/hello</url-pattern>
     </servlet-mapping>
+    
+    <resource-ref>
+        <res-ref-name>BeanManager</res-ref-name>
+        <res-ref-name>osgi:service/javax.enterprise.inject.spi.BeanManager/(osgi.jndi.service.name=BeanManager)</res-ref-name>
+    </resource-ref>
 
 </web-app>
