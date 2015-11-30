@@ -52,6 +52,7 @@
                             org.eclipse.jetty.jndi,
                             org.eclipse.jetty.servlet.listener,
                             javax.enterprise.inject.spi,
+                            org.jboss.resteasy.plugins.server.servlet,
                             *
                         </Import-Package>
                         <Require-Capability>
@@ -68,14 +69,6 @@
 
     <!-- minimal set of dependencies -->
     <dependencies>
-        <!-- the jetty version we'll use -->
-        <dependency>
-            <groupId>org.eclipse.jetty.aggregate</groupId>
-            <artifactId>jetty-all-server</artifactId>
-            <version>8.0.4.v20111024</version>
-            <type>jar</type>
-            <scope>compile</scope>
-        </dependency>
 
         <!-- we'll use this version of Weld -->
         <dependency>
@@ -86,11 +79,6 @@
         <dependency>
             <groupId>org.jboss.weld</groupId>
             <artifactId>weld-core</artifactId>
-            <version>2.3.0.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.weld.se</groupId>
-            <artifactId>weld-se</artifactId>
             <version>2.3.0.Final</version>
         </dependency>
 
@@ -115,27 +103,11 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- RestEasy -->
         <dependency>
-            <artifactId>el-api</artifactId>
-            <groupId>javax.el</groupId>
-            <version>2.2</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.deltaspike.core</groupId>
-            <artifactId>deltaspike-core-api</artifactId>
-            <version>1.5.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.deltaspike.cdictrl</groupId>
-            <artifactId>deltaspike-cdictrl-weld</artifactId>
-            <version>1.5.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <version>4.2.0</version>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jaxrs</artifactId>
+            <version>2.3.10.Final</version>
         </dependency>
 
     </dependencies>
