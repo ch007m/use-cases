@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.deltaspike.cdise.api.CdiContainer;
-import org.apache.deltaspike.cdise.api.CdiContainerLoader;
+//import org.apache.deltaspike.cdise.api.CdiContainer;
+//import org.apache.deltaspike.cdise.api.CdiContainerLoader;
 import org.eclipse.jetty.plus.jndi.Resource;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -37,7 +37,7 @@ public class Launcher {
     /**
      * port to listen on
      */
-    private static int httpPort = 8081;
+    private static int httpPort = 9090;
 
     private static String[] _configurationClasses = {
             "org.eclipse.jetty.webapp.WebInfConfiguration",
@@ -60,9 +60,9 @@ public class Launcher {
      */
     public static void main(String[] args) throws Exception {
 
-        CdiContainer cdiContainer = CdiContainerLoader.getCdiContainer();
+/*        CdiContainer cdiContainer = CdiContainerLoader.getCdiContainer();
         cdiContainer.boot();
-        cdiContainer.getContextControl().startContexts();
+        cdiContainer.getContextControl().startContexts();*/
 
         System.setProperty("java.naming.factory.url", "org.eclipse.jetty.jndi");
         System.setProperty("java.naming.factory.initial", "org.eclipse.jetty.jndi.InitialContextFactory");
@@ -89,7 +89,7 @@ public class Launcher {
         server.start();
         server.join();
 
-        cdiContainer.shutdown();
+/*        cdiContainer.shutdown();*/
     }
 
     public static class HelloWorldServlet extends HttpServlet {

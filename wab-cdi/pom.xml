@@ -54,6 +54,10 @@
                             javax.enterprise.inject.spi,
                             org.jboss.resteasy.plugins.server.servlet,
                             org.jboss.weld.environment.servlet,
+                            org.jboss.resteasy.plugins.providers,
+                            org.jboss.resteasy.plugins.providers.jackson,
+                            org.jboss.resteasy.plugins.interceptors.encoding,
+                            org.jboss.resteasy.plugins.interceptors,
                             *
                         </Import-Package>
                         <Require-Capability>
@@ -106,14 +110,14 @@
 
         <!-- RestEasy -->
         <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jaxrs</artifactId>
-            <version>2.3.10.Final</version>
+            <groupId>io.apiman</groupId>
+            <artifactId>resteasy-cdi</artifactId>
+            <version>2.3.10.Final_1</version>
         </dependency>
         <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-cdi</artifactId>
-            <version>2.3.10.Final</version>
+            <groupId>io.apiman</groupId>
+            <artifactId>resteasy-jaxrs</artifactId>
+            <version>2.3.10.Final_1</version>
         </dependency>
 
     </dependencies>

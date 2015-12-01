@@ -125,7 +125,7 @@
             <version>2.2</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.apache.deltaspike.core</groupId>
             <artifactId>deltaspike-core-api</artifactId>
             <version>1.5.1</version>
@@ -134,7 +134,7 @@
             <groupId>org.apache.deltaspike.cdictrl</groupId>
             <artifactId>deltaspike-cdictrl-weld</artifactId>
             <version>1.5.1</version>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>org.osgi</groupId>

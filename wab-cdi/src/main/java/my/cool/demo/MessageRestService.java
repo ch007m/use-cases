@@ -1,11 +1,11 @@
 package my.cool.demo;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 @Path("/message")
+@Consumes( { "application/json", "text/json" } )
+@Produces( { "application/json", "text/json" } )
 public class MessageRestService {
 
     @GET

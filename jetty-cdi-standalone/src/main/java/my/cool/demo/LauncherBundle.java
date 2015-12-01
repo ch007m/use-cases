@@ -2,7 +2,6 @@ package my.cool.demo;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
-import org.jboss.weld.environment.servlet.Listener;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -47,7 +46,7 @@ public class LauncherBundle implements BundleActivator {
 
     @Override public void start(BundleContext context) throws Exception {
 
-        System.setProperty("java.naming.factory.url", "org.eclipse.jetty.jndi");
+/*        System.setProperty("java.naming.factory.url", "org.eclipse.jetty.jndi");
         System.setProperty("java.naming.factory.initial", "org.eclipse.jetty.jndi.InitialContextFactory");
 
         ClassLoader thatLoader = Thread.currentThread().getContextClassLoader();
@@ -57,7 +56,7 @@ public class LauncherBundle implements BundleActivator {
             InitialContext ctx = new InitialContext();
         } finally {
             Thread.currentThread().setContextClassLoader(thatLoader);
-        }
+        }*/
 
         server = new Server(httpPort);
         WebAppContext webapp = new WebAppContext();
@@ -68,6 +67,8 @@ public class LauncherBundle implements BundleActivator {
         webapp.setClassLoader(getClass().getClassLoader());
 
         webapp.addServlet(HelloWorldServlet.class, "/*");
+
+        webapp.setClassLoader(getClass().getClassLoader());
 
         server.setHandler(webapp);
         server.start();
