@@ -14,6 +14,10 @@
         <param-value>true</param-value>
     </context-param>
     <context-param>
+        <param-name>resteasy.resources</param-name>
+        <param-value>my.cool.demo.MessageRestService</param-value>
+    </context-param>
+    <context-param>
         <param-name>resteasy.servlet.mapping.prefix</param-name>
         <param-value>/rest</param-value>
     </context-param>
@@ -45,14 +49,13 @@
         <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
     </listener>
 
-
     <servlet>
         <servlet-name>resteasy</servlet-name>
         <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
-        <init-param>
+       <!-- <init-param>
             <param-name>javax.ws.rs.Application</param-name>
             <param-value>my.cool.demo.MessageApplication</param-value>
-        </init-param>
+        </init-param> -->
     </servlet>
 
     <servlet>
