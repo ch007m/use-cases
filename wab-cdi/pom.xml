@@ -48,16 +48,13 @@
                         <_wab>src/main/webapp/</_wab>
                         <Web-ContextPath>/sample</Web-ContextPath>
                         <Import-Package>
-                            javax.naming,
-                            org.eclipse.jetty.jndi,
-                            org.eclipse.jetty.servlet.listener,
                             javax.enterprise.inject.spi,
-                            org.jboss.resteasy.plugins.server.servlet,
-                            org.jboss.weld.environment.servlet,
-                            org.jboss.resteasy.plugins.providers,
-                            org.jboss.resteasy.plugins.providers.jackson,
+                            org.jboss.resteasy.cdi.osgi,
                             org.jboss.resteasy.plugins.interceptors.encoding,
                             org.jboss.resteasy.plugins.interceptors,
+                            org.jboss.resteasy.plugins.providers,
+                            org.jboss.resteasy.plugins.providers.jackson,
+                            org.jboss.resteasy.plugins.server.servlet,
                             *
                         </Import-Package>
                         <Require-Capability>
@@ -75,49 +72,10 @@
     <!-- minimal set of dependencies -->
     <dependencies>
 
-        <!-- we'll use this version of Weld -->
         <dependency>
-            <groupId>org.jboss.weld.servlet</groupId>
-            <artifactId>weld-servlet</artifactId>
-            <version>2.3.0.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.weld</groupId>
-            <artifactId>weld-core</artifactId>
-            <version>2.3.0.Final</version>
-        </dependency>
-
-        <!-- normally following are provided, but not if you run within jetty -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.10</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- RestEasy -->
-        <dependency>
-            <groupId>io.apiman</groupId>
-            <artifactId>resteasy-cdi</artifactId>
-            <version>2.3.10.Final_1</version>
-        </dependency>
-        <dependency>
-            <groupId>io.apiman</groupId>
-            <artifactId>resteasy-jaxrs</artifactId>
-            <version>2.3.10.Final_1</version>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.0.1</version>
         </dependency>
 
     </dependencies>

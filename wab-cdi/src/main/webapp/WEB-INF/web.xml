@@ -7,7 +7,7 @@
 
     <context-param>
         <param-name>resteasy.injector.factory</param-name>
-        <param-value>org.jboss.resteasy.cdi.CdiInjectorFactory</param-value>
+        <param-value>org.jboss.resteasy.cdi.osgi.InjectorFactory</param-value>
     </context-param>
     <context-param>
         <param-name>resteasy.scan</param-name>
