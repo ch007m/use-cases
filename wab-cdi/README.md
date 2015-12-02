@@ -6,7 +6,6 @@ install -s wrap:mvn:org.apache.httpcomponents/httpcore/4.4.1
 install -s mvn:io.apiman/resteasy-cdi/2.3.10.Final_1
 install -s mvn:io.apiman/resteasy-jaxrs/2.3.10.Final_1
 
-
 install -s wrap:mvn:org.jboss.classfilewriter/jboss-classfilewriter/1.1.2.Final
 install -s mvn:org.jboss.weld/weld-osgi-bundle/2.3.0.Final
 install -s mvn:my.cool.demo/wab-cdi/1.0
