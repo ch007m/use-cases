@@ -1,4 +1,6 @@
-package my.cool.demo;
+package my.cool.demo.application;
+
+import my.cool.demo.MessageRestService;
 
 import java.util.HashSet;
 import java.util.Set;

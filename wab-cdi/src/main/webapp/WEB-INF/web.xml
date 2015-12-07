@@ -7,7 +7,8 @@
 
     <context-param>
         <param-name>resteasy.injector.factory</param-name>
-        <param-value>org.jboss.resteasy.cdi.osgi.InjectorFactory</param-value>
+<!--        <param-value>org.jboss.resteasy.cdi.osgi.InjectorFactory</param-value>-->
+        <param-value>org.jboss.resteasy.cdi.CdiInjectorFactory</param-value>
     </context-param>
     <context-param>
         <param-name>resteasy.scan</param-name>
@@ -45,6 +46,11 @@
         </param-value>
     </context-param>
 
+    <!-- Used for Local Arquillian Test -->
+    <listener>
+        <listener-class>org.jboss.weld.environment.servlet.BeanManagerResourceBindingListener</listener-class>
+    </listener>
+
     <listener>
         <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
     </listener>
@@ -58,5 +64,14 @@
         <servlet-name>resteasy</servlet-name>
         <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
+
+    <!-- Included for Local Arquillian test     -->
+    <resource-env-ref>
+        <resource-env-ref-name>BeanManager</resource-env-ref-name>
+        <resource-env-ref-type>
+            javax.enterprise.inject.spi.BeanManager
+        </resource-env-ref-type>
+    </resource-env-ref>
+
 
 </web-app>
