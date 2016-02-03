@@ -4,6 +4,9 @@ import org.apache.camel.test.spring.CamelSpringTestSupport;
 import org.apache.cxf.Bus;
 import org.apache.cxf.BusFactory;
 import org.apache.cxf.bus.spring.SpringBusFactory;
+import org.apache.cxf.frontend.ClientProxy;
+import org.apache.cxf.interceptor.LoggingInInterceptor;
+import org.apache.cxf.interceptor.LoggingOutInterceptor;
 import org.fuse.ws.model.InputReportIncident;
 import org.fuse.ws.model.OutputReportIncident;
 import org.junit.Test;
@@ -23,7 +26,8 @@ public class WSClientTest extends CamelSpringTestSupport {
     @Test public void ReportIncidentWS() throws Exception {
         SpringBusFactory bf = new SpringBusFactory();
         URL busFile = WSClientTest.class.getResource("/config/client.xml");
-        Bus bus = bf.createBus(busFile.toString());
+        // Bus bus = bf.createBus(busFile.toString());
+        Bus bus = bf.createBus();
         BusFactory.setDefaultBus(bus);
         BusFactory.setThreadDefaultBus(bus);
 
@@ -41,6 +45,10 @@ public class WSClientTest extends CamelSpringTestSupport {
         QName SERVICE_NAME = new QName("http://service.ws.fuse.org/", "incidentService");
         Service service = Service.create(wsdlURL, SERVICE_NAME);
         IncidentService client = service.getPort(IncidentService.class);
+
+        ClientProxy.getClient(client).getInInterceptors().add(new LoggingInInterceptor());
+        ClientProxy.getClient(client).getOutInterceptors().add(new LoggingOutInterceptor());
+
         OutputReportIncident response = client.reportIncident(incident);
 
         assertEquals("Check Response", "OK;123", response.getCode());
