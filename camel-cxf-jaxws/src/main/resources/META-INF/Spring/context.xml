@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:cxf="http://camel.apache.org/schema/cxf"
+	   xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/cxf http://camel.apache.org/schema/cxf/camel-cxf.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+    ">
+
+	<cxf:cxfEndpoint id="reportEndpoint"
+					 address="http://localhost:9999/ws/report"
+					 serviceClass="org.fuse.ws.IncidentService" />
+		
+	<bean id="reportIncidentProcessor" class="org.fuse.ws.bean.ReportIncidentBean" />
+	<bean id="statusIncidentProcessor" class="org.fuse.ws.bean.StatusIncidentBean" />
+
+	<camelContext xmlns="http://camel.apache.org/schema/spring">
+
+		<route id="cxf">
+			<!-- route starts from the cxf webservice in POJO mode -->
+			<from uri="cxf:bean:reportEndpoint" />
+			<recipientList>
+				<simple>direct:${header.operationName}</simple>
+			</recipientList>
+		</route>
+
+		<route id="report">
+			<from uri="direct:reportIncident"/>
+			<log message="reportIncident Call"/>
+			<bean ref="reportIncidentProcessor"/>
+			<to uri="log:output" />
+		</route>
+
+		<route id="status">
+			<from uri="direct:statusIncident"/>
+			<log message="statusIncident Call"/>
+			<bean ref="statusIncidentProcessor"/>
+			<to uri="log:output" />
+		</route>
+
+	</camelContext>
+
+</beans>
