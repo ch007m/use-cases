@@ -26,6 +26,7 @@
     <modules>
         <module>simplejava</module>
         <module>standalone-activemq</module>
+        <module>camel-cxf-jaxws</module>
         <module>demo-camel-quartz</module>
         <module>demo-camel-jsonpath</module>
         <module>demo-camel-standalone</module>
@@ -43,5 +44,6 @@
         <module>httpclient-digest-gerrit</module>
         <module>vertx-tls</module>
         <module>jetty-cdi-standalone</module>
+        <module>camel-ldap</module>
     </modules>
 </project>

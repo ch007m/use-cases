@@ -10,6 +10,7 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import java.io.File;
@@ -41,6 +42,6 @@ public class BasicTestCase {
 
         // Then
         assertNotNull(result);
-        assertEquals("404",result.getStatus());
+        assertEquals(200,result.getStatus());
     }
 }
