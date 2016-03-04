@@ -5,13 +5,13 @@ import org.apache.camel.ProducerTemplate;
 import java.util.ArrayList;
 import org.acme.model.Person
 
-//global org.acme.test.CamelHelper camelHelper;
-global java.util.ArrayList<Person> persons;
+global org.acme.test.CamelHelper camelHelper;
 
 rule "Demo"
     when
       Person()
     then
       System.out.println("[ Fired: " + drools.getRule().getName() + " ]");
-      System.out.println("[ Person[0] : " + ((Person)persons.get(0)).getName() + " ]");
+      System.out.println("[Camel Helper : " + camelHelper + "]");
+      //camelHelper.sendMessage("Hello World");
 end
