@@ -30,6 +30,7 @@ public class KieGlobalsTest {
 
         Collection col = ksession.getGlobals().getGlobalKeys();
         assertEquals(2, col.size());
+
     }
 
 }
