@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/security
+       http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <!-- ldap settings -->
+    <security:ldap-server ldif="classpath:org/fuse/usecase/activemq.ldif" />
+    <bean id="ldapserver" class="javax.naming.directory.InitialDirContext">
+        <constructor-arg>
+            <props>
+                <prop key="java.naming.factory.initial">com.sun.jndi.ldap.LdapCtxFactory</prop>
+                <prop key="java.naming.provider.url">ldap://127.0.0.1:33389</prop>
+                <prop key="java.naming.security.authentication">none</prop>
+            </props>
+        </constructor-arg>
+    </bean>
+</beans>
