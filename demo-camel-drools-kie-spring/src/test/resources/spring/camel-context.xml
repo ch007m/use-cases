@@ -9,13 +9,14 @@
            http://drools.org/schema/kie-spring http://drools.org/schema/kie-spring.xsd">
 
     <bean id="kiePostProcessor" class="org.kie.spring.KModuleBeanFactoryPostProcessor"/>
+
     <bean id="camelHelper" class="org.acme.test.CamelHelper" depends-on="demo">
         <property name="ctx" ref="demo"/>
     </bean>
 
     <kie:kmodule id="demo-kmodule">
-        <kie:kbase name="kbase" packages="rules">
-            <kie:ksession name="ksession1" type="stateless">
+        <kie:kbase name="kbase" packages="camel_rules">
+            <kie:ksession name="ksession1" type="stateful">
                 <kie:batch>
                     <kie:set-global identifier="camelHelper" ref="camelHelper"/>
                 </kie:batch>
