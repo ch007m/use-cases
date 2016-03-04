@@ -8,13 +8,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class DroolsCamelTest extends CamelSpringTestSupport {
 
     private static final Logger logger = LoggerFactory.getLogger(DroolsCamelTest.class);
-    String[] users = {"Charles", "Samuel", "Claus", "Jeff", "James", "Chad", "Rachel", "Eric", "Nandan", "David", "Bernard"};
+    String[] users = {"Charles", "Samuel", "Claus", "Jeff", "James", "Chad", "Rachel", "Eric", "Nandan", "David", "Bernard", "Satya" , "Mario", "Chris"};
 
     @Override
     protected AbstractApplicationContext createApplicationContext() {
