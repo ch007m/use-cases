@@ -15,7 +15,7 @@
 
     <kie:kmodule id="demo-kmodule">
         <kie:kbase name="kbase" packages="rules">
-            <kie:ksession name="ksession1" type="stateful">
+            <kie:ksession name="ksession1" type="stateless">
                 <kie:batch>
                     <kie:set-global identifier="camelHelper" ref="camelHelper"/>
                 </kie:batch>
