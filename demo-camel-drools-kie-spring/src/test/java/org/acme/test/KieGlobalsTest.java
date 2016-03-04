@@ -1,7 +1,5 @@
 package org.acme.test;
 
-import org.acme.model.Person;
-import org.drools.core.impl.StatelessKnowledgeSessionImpl;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kie.api.runtime.KieSession;
