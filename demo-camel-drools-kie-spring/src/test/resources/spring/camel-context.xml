@@ -11,6 +11,7 @@
     <bean id="kiePostProcessor" class="org.kie.spring.KModuleBeanFactoryPostProcessor"/>
 
     <bean id="droolsCommandHelper" class="org.acme.test.DroolsCommandHelper"/>
+    <bean id="personHelper" class="org.acme.test.PersonHelper"/>
 
     <bean id="camelHelper" class="org.acme.test.CamelHelper" depends-on="demo">
         <property name="ctx" ref="demo"/>
@@ -27,15 +28,15 @@
     </kie:kmodule>
 
     <camelContext trace="false" id="demo" xmlns="http://camel.apache.org/schema/spring">
-        <route id="simple_rule1">
-            <from uri="direct:simple_rule1"/>
-            <to uri="kie:ksession1?action=insertBody"/>
-            <bean ref="droolsCommandHelper" method="insertAndFireAll"/>
+        <route id="can_drink_route">
+            <from uri="direct:camel_rule"/>
+            <bean ref="personHelper" method="generate"/>
+            <bean ref="droolsCommandHelper" method="insertCommands"/>
             <to uri="kie:ksession1?action=execute"/>
         </route>
         <route>
-            <from uri="direct:test"/>
-            <log message="Msg : ${body}"/>
+            <from uri="direct:log_message"/>
+            <log message="[Msg received : ${body}]"/>
         </route>
     </camelContext>
 </beans>

@@ -9,7 +9,7 @@ public class CamelHelper {
 
     public void sendMessage(String msg) {
         ProducerTemplate t = ctx.createProducerTemplate();
-        t.sendBody("direct:test",msg);
+        t.sendBody("direct:log_message",msg);
     }
 
     public CamelContext getCtx() {

@@ -1,0 +1,29 @@
+package rules;
+
+import org.apache.camel.CamelContext;
+import org.apache.camel.ProducerTemplate;
+import java.util.ArrayList;
+import org.acme.model.Person
+
+global org.acme.test.CamelHelper camelHelper;
+
+rule "pub"
+    when
+      p : Person( age >= 18)
+    then
+      // if (camelHelper != null) { System.out.println("[Camel Helper : " + camelHelper + "]");}
+      System.out.println("[Person age is : " + p.getAge());
+      p.setCanDrink(true);
+
+      camelHelper.sendMessage(p.getName() + " can drink and go the pub !");
+end
+
+rule "nopub"
+    when
+      p : Person( age < 18)
+    then
+      System.out.println("[Person age is : " + p.getAge());
+      p.setCanDrink(false);
+
+      camelHelper.sendMessage(p.getName() + " can't go the pub as he/she is too young.");
+end

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class DroolsCommandHelper {
 
-    public BatchExecutionCommandImpl insertAndFireAll(Exchange exchange) {
+    public BatchExecutionCommandImpl insertCommands(Exchange exchange) {
         final Object body = exchange.getIn().getBody();
 
         BatchExecutionCommandImpl command = new BatchExecutionCommandImpl();
