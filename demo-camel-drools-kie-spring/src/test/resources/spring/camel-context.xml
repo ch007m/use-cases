@@ -10,6 +10,8 @@
 
     <bean id="kiePostProcessor" class="org.kie.spring.KModuleBeanFactoryPostProcessor"/>
 
+    <bean id="droolsCommandHelper" class="org.acme.test.DroolsCommandHelper"/>
+
     <bean id="camelHelper" class="org.acme.test.CamelHelper" depends-on="demo">
         <property name="ctx" ref="demo"/>
     </bean>
@@ -28,7 +30,8 @@
         <route id="simple_rule1">
             <from uri="direct:simple_rule1"/>
             <to uri="kie:ksession1?action=insertBody"/>
-            <log message="Rule fired : ${body}"/>
+            <bean ref="droolsCommandHelper" method="insertAndFireAll"/>
+            <to uri="kie:ksession1?action=execute"/>
         </route>
         <route>
             <from uri="direct:test"/>

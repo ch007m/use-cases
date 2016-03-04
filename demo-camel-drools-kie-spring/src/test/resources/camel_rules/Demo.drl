@@ -13,5 +13,5 @@ rule "Demo"
     then
       System.out.println("[Fired: " + drools.getRule().getName() + " ]");
       System.out.println("[Camel Helper : " + camelHelper + "]");
-      //camelHelper.sendMessage("Hello World");
+      camelHelper.sendMessage("Hello World");
 end
