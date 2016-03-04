@@ -26,15 +26,13 @@ public class KieGlobalsTest {
 
     @Test
     public void testKieSession() throws Exception {
-        StatelessKnowledgeSessionImpl ksession = (StatelessKnowledgeSessionImpl) context.getBean("ksession1");
+        // GET A CLASS CAST
+        KieSession ksession = (KieSession) context.getBean("ksession1");
+        //StatelessKnowledgeSessionImpl ksession = (StatelessKnowledgeSessionImpl) context.getBean("ksession1");
         assertNotNull(ksession);
 
         Collection col = ksession.getGlobals().getGlobalKeys();
         assertEquals(1, col.size());
-/*
-        Person[] persons = (Person[]) col.toArray(new Person[col.size()]);
-        Person p = (Person) persons[0];
-        assertNotNull(p);*/
     }
 
 }

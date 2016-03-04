@@ -3,7 +3,6 @@ package org.acme.test;
 import org.acme.model.Person;
 import org.apache.camel.test.spring.CamelSpringTestSupport;
 import org.junit.Test;
-import org.kie.api.runtime.KieSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.AbstractApplicationContext;
