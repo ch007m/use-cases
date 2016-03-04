@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.acme</groupId>
+    <artifactId>course-completion-process</artifactId>
+    <version>1.0</version>
+    <packaging>jar</packaging>
+    <name>Demo :: Spring Camel with Kie &amp; Drools</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <camel.version>2.15.3</camel.version>
+        <spring.version>3.2.13.RELEASE</spring.version>
+        <drools.version>6.2.0.Final</drools.version>
+        <kie.version>6.2.0.Final</kie.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-parent</artifactId>
+                <version>${camel.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.drools</groupId>
+                <artifactId>drools-bom</artifactId>
+                <version>${drools.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.kie</groupId>
+                <artifactId>kie-bom</artifactId>
+                <version>${kie.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-spring</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-bindy</artifactId>
+        </dependency>
+
+        <!-- Spring -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-expression</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+
+        <!-- Drools -->
+        <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-internal</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.drools</groupId>
+            <artifactId>drools-compiler</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-spring</artifactId>
+        </dependency>
+        <!-- This is strange as version 6.3.0 is not longer available -->
+        <dependency>
+            <groupId>org.kie</groupId>
+            <artifactId>kie-camel</artifactId>
+            <version>6.2.0.Final</version>
+        </dependency>
+
+        <!-- test deps -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-test-spring</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>fusesource-public-repository</id>
+            <name>FuseSource Release Repository</name>
+            <url>http://repository.jboss.org/nexus/content/repositories/fs-public/</url>
+        </repository>
+        <repository>
+            <id>jboss-public-repository</id>
+            <name>JBoss.org Public Maven Repository Group</name>
+            <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+        </repository>
+        <repository>
+            <id>jboss-fuse-ea</id>
+            <url>http://repository.jboss.org/nexus/content/groups/ea</url>
+        </repository>
+        <repository>
+            <id>jboss-releases</id>
+            <name>JBoss.org Fuse Releases</name>
+            <url>http://repository.jboss.org/nexus/content/repositories/fs-releases/</url>
+        </repository>
+        <repository>
+            <id>Maven Central</id>
+            <url>http://repo1.maven.org/maven2/</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>fusesource-public-repository</id>
+            <name>FuseSource Release Repository</name>
+            <url>http://repository.jboss.org/nexus/content/repositories/fs-public/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>jboss-public-repository-group</id>
+            <name>JBoss.org Public Maven Repository Group</name>
+            <url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>jboss-fuse-releases</id>
+            <name>JBoss.org Fuse Releases</name>
+            <url>http://repository.jboss.org/nexus/content/repositories/fs-releases</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>jboss-fuse-ea</id>
+            <url>http://repository.jboss.org/nexus/content/groups/ea</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+</project>
