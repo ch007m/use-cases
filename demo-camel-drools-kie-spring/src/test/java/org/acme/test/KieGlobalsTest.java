@@ -3,6 +3,7 @@ package org.acme.test;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.StatelessKieSession;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -24,9 +25,7 @@ public class KieGlobalsTest {
 
     @Test
     public void testKieSession() throws Exception {
-        // GET A CLASS CAST
-        KieSession ksession = (KieSession) context.getBean("ksession1");
-        //StatelessKnowledgeSessionImpl ksession = (StatelessKnowledgeSessionImpl) context.getBean("ksession1");
+        StatelessKieSession ksession = (StatelessKieSession) context.getBean("ksession1");
         assertNotNull(ksession);
 
         Collection col = ksession.getGlobals().getGlobalKeys();

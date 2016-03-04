@@ -6,7 +6,7 @@
                           http://drools.org/schema/kie-spring http://drools.org/schema/kie-spring.xsd">
 
     <bean id="person" class="org.acme.model.Person">
-        <property name="name" value="false"/>
+        <property name="name" value="charles"/>
     </bean>
     <bean id="personsList" class="java.util.ArrayList"/>
 
@@ -14,7 +14,7 @@
         <kie:kbase name="kbase1" packages="rules">
             <kie:ksession name="ksession1" type="stateless">
                 <kie:batch>
-                    <kie:insert-object ref="person"/>
+                    <kie:set-global identifier="person" ref="person"/>
                     <kie:set-global identifier="persons" ref="personsList"/>
                 </kie:batch>
             </kie:ksession>
