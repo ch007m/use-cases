@@ -25,11 +25,11 @@ public class KieGlobalsTest {
 
     @Test
     public void testKieSession() throws Exception {
-        StatelessKieSession ksession = (StatelessKieSession) context.getBean("ksession1");
+        KieSession ksession = (KieSession) context.getBean("ksession1");
         assertNotNull(ksession);
 
         Collection col = ksession.getGlobals().getGlobalKeys();
-        assertEquals(1, col.size());
+        assertEquals(2, col.size());
     }
 
 }
