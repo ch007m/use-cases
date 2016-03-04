@@ -5,7 +5,7 @@ import org.apache.camel.ProducerTemplate;
 import java.util.ArrayList;
 import org.acme.model.Person
 
-global org.acme.test.CamelHelper camelHelper;
+global org.acme.test.CamelHelper ctx;
 
 rule "pub"
     when
@@ -15,7 +15,7 @@ rule "pub"
       System.out.println("[Person age is : " + p.getAge());
       p.setCanDrink(true);
 
-      camelHelper.sendMessage(p.getName() + " can drink and go the pub !");
+      ctx.sendMessage(p.getName() + " can drink and go the pub !");
 end
 
 rule "nopub"
@@ -25,5 +25,5 @@ rule "nopub"
       System.out.println("[Person age is : " + p.getAge());
       p.setCanDrink(false);
 
-      camelHelper.sendMessage(p.getName() + " can't go the pub as he/she is too young.");
+      ctx.sendMessage(p.getName() + " can't go the pub as he/she is too young.");
 end
