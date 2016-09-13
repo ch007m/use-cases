@@ -13,7 +13,8 @@ eval $(minishift docker-env)
 
 ```
 export KUBERNETES_MASTER=https://$(minishift ip):8443
-```    
+``` 
+   
 * Log on to openshift
 ```    
 oc login $(minishift ip):8443 -u admin -p admin
@@ -44,6 +45,31 @@ oc get configmap/app-config -o yaml
    
 ```
 mvn -Popenshift   
+```
+
+# Consult the log of the pod
+
+```
+oc log simple-config-map-j9syq
+W0913 19:18:19.483573   52409 cmd.go:269] log is DEPRECATED and will be removed in a future version. Use logs instead.
+Sep 13, 2016 5:06:42 PM io.vertx.core.impl.launcher.commands.VertxIsolatedDeployer
+INFO: Succeeded in deploying verticle
+{
+  "\"enemies.cheat.level\"" : "\"noGoodRotten\",",
+  "\"enemies.cheat\"" : "true,",
+  "\"secret.code.allowed\"" : "true,",
+  "\"lives\"" : "3,",
+  "}" : "",
+  "{" : "",
+  "\"secret.code.passphrase\"" : "\"UUDDLRLRBABAS\",",
+  "\"enemies\"" : "\"aliens\",",
+  "\"secret.code.lives\"" : 30.0,
+  "app.properties" : "{\n    \"logging\":\"debug\",\n    \"hostname\":\"127.0.0.1\"\n}",
+  "color.good" : "purple",
+  "color.bad" : "yellow",
+  "allow.textmode" : true,
+  "how.nice.to.look" : "fairlyNice"
+}
 ```
 
 # Delete Replication controller, service, ConfigMap
