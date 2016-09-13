@@ -49,8 +49,6 @@ mvn -Popenshift
 # Troubleshoot
 
 ```
-oc delete service,rc simple-vertx-configmap
-
-mkdir -p target/temp
-tar -vxf target/simple-config-map-1.0.0-SNAPSHOT-fat.jar -C target/temp
+oc delete service,rc simple-config-map
+oc delete rc simple-config-map
 ```
