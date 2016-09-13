@@ -14,18 +14,21 @@ public class MyVerticle extends AbstractVerticle {
         store1.setType("configmap")
                 .setFormat("properties")
                 .setConfig(new JsonObject()
+                        .put("namespace", "vertx-demo")
                         .put("name", "game-config")
-                        .put("key", "some.properties"));
+                        .put("key", "game.properties"));
 
         ConfigurationStoreOptions store3 = new ConfigurationStoreOptions();
         store3.setType("configmap")
                 .setConfig(new JsonObject()
-                        .put("name", "from-json")
-                        .put("key", "file-json.json"));
+                        .put("namespace", "vertx-demo")
+                        .put("name", "game-config")
+                        .put("key", "ui.properties"));
 
         ConfigurationStoreOptions store2 = new ConfigurationStoreOptions();
         store2.setType("configmap")
                 .setConfig(new JsonObject()
+                        .put("namespace", "vertx-demo")
                         .put("name", "special-config"));
 
 

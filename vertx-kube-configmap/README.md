@@ -29,9 +29,15 @@ oc policy add-role-to-group view system:serviceaccounts -n vertx-demo
 # Create the ConfigMap
 
 ```
-oc create configmap game-config --from-literal=key=some.properties
-oc create configmap from-json --from-literal=key=file-json.json
-oc create configmap special-config    
+oc create configmap game-config --from-file=src/main/resources/game.properties --from-file=src/main/resources/ui.properties
+oc create configmap special-config 
+```
+
+# To consult the configMap (optional)
+
+```
+oc get configmap game-config -o yaml
+oc get configmap/special-config -o yaml
 ```
 
 * Build and deploy the project
@@ -43,8 +49,7 @@ mvn -Popenshift
 # Troubleshoot
 
 ```
-oc delete service simple-vertx-configmap
-oc delete rc simple-config-map
+oc delete service,rc simple-vertx-configmap
 
 mkdir -p target/temp
 tar -vxf target/simple-config-map-1.0.0-SNAPSHOT-fat.jar -C target/temp
