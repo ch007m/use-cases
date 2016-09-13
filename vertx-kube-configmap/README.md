@@ -29,13 +29,18 @@
 
     mvn clean install
     
-* To build the docker image and generate the Kubernetes config file
+* To build the docker image, generate the Kubernetes config file and deploy on OpenShift 
 
-    mvn -Pf8-build -Popenshift
-    
-* To deploy on OpenShift 
-    
-    mvn -Pf8-local-deploy -Popenshift    
+    mvn -Popenshift   
 
 # Deploy project
+
+
+# Troubleshoot
+
+    oc delete service simple-vertx-configmap
+    oc delete rc simple-config-map
+    
+    mkdir -p target/temp
+    tar -vxf target/simple-config-map-1.0.0-SNAPSHOT-fat.jar -C target/temp
 

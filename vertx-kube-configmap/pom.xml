@@ -6,16 +6,20 @@
 
     <groupId>io.vertx.example.kubernetes</groupId>
     <artifactId>simple-config-map</artifactId>
-    <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
     <name>Vert.x Configuration - Kubernetes ConfigMap</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <vertx.version>3.3.3</vertx.version>
+
+        <docker.maven.plugin.version>0.13.9</docker.maven.plugin.version>
+
         <fabric8.version>2.2.157</fabric8.version>
-        <fabric8.maven.plugin.version>3.1.38</fabric8.maven.plugin.version>
+        <fabric8.maven.plugin.version>2.2.157</fabric8.maven.plugin.version>
+
+        <vertx.version>3.3.3</vertx.version>
         <main.verticle>io.vertx.example.kubernetes.MyVerticle</main.verticle>
     </properties>
 
@@ -54,22 +58,12 @@
             <artifactId>vertx-configuration-kubernetes-configmap</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
-
-        <!-- Testing -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-unit</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
+
+        <sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -103,6 +97,7 @@
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
                                         <Main-Class>io.vertx.core.Launcher</Main-Class>
+                                        <!-- io.vertx.example.kubernetes.MyVerticle -->
                                         <Main-Verticle>${main.verticle}</Main-Verticle>
                                     </manifestEntries>
                                 </transformer>
@@ -130,14 +125,21 @@
             <properties>
                 <docker.group.name>vertx-demo</docker.group.name>
                 <docker.image>${docker.group.name}/${project.artifactId}:${project.version}</docker.image>
+                <fabric8.service.name>simple-vertx-configmap</fabric8.service.name>
+                <fabric8.service.port>8080</fabric8.service.port>
+                <fabric8.service.containerPort>8080</fabric8.service.containerPort>
+
+                <fabric8.label.component>${project.artifactId}</fabric8.label.component>
+                <fabric8.label.container>vertx</fabric8.label.container>
+                <fabric8.label.group>vertx-demo</fabric8.label.group>
+                <fabric8.service.type>LoadBalancer</fabric8.service.type>
             </properties>
             <build>
-                <defaultGoal>clean install fabric8:build</defaultGoal>
+                <defaultGoal>clean install docker:build fabric8:json fabric8:apply</defaultGoal>
                 <plugins>
                     <plugin>
-                        <groupId>io.fabric8</groupId>
-                        <artifactId>fabric8-maven-plugin</artifactId>
-                        <version>${fabric8.maven.plugin.version}</version>
+                        <groupId>org.jolokia</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
                         <configuration>
                             <images>
                                 <image>
@@ -145,8 +147,8 @@
                                     <alias>vertx-demo</alias>
                                     <build>
                                         <from>java:8-jre-alpine</from>
+                                        <maintainer>vertx-team</maintainer>
                                         <tags>
-                                            <tag>latest</tag>
                                             <tag>${project.version}</tag>
                                         </tags>
                                         <workdir>/opt</workdir>
@@ -178,73 +180,37 @@
                                     </build>
                                 </image>
                             </images>
-                            <resources>
-                                <!-- Labels that are applied to all created objects -->
-                                <labels>
-                                    <group>vertx-demo</group>
-                                </labels>
-                                <!-- Definition of the ReplicationController / ReplicaSet. Any better name than "containers" ? -->
-                                <deployment>
-                                    <!-- Name of the replication controller, which will have a sane default (container alisa, mvn coords, ..) -->
-                                    <name>${project.artifactId}</name>
-                                    <!-- Replica count-->
-                                    <replicas>1</replicas>
-                                    <!-- Container to include in the POD template. By default all with a "build" section in the
-                                         "images" configuration will be add to the POD. However, they can be configured separately, too.
-                                        -->
-                                    <containers>
-                                        <container>
-                                            <!-- Alias name correlating with the same named "image" configuration above. Can be ommitted
-                                                 if there is only a single image added -->
-                                            <alias>vertx-demo</alias>
-                                            <ports>
-                                                <!-- Ports to expose in the pod specs -->
-                                                <port>8778</port>
-                                            </ports>
-                                            <mounts>
-                                                <scratch>/var/scratch</scratch>
-                                            </mounts>
-                                        </container>
-                                    </containers>
-                                </deployment>
-                                <!-- Dedicated section for (multiple) services to define -->
-                                <services>
-                                    <service>
-                                        <name>${project.artifactId}</name>
-                                        <headless>true</headless>
-                                    </service>
-                                </services>
-                            </resources>
                         </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>fabric8-maven-plugin</artifactId>
+                        <version>${fabric8.maven.plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>json</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>json</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>attach</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>attach</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
         </profile>
 
-        <!--
-           Default F8 commands:
-
-           mvn -Pf8-build         ... build Docker images and create OpenShift deployment configs
-           mvn -Pf8-deploy        ... f8-build + push to Docker registry + applying deployment config to OpenShift
-           mvn -Pf8-local-deploy ... deployment for a single node setup without pushing to a registry
-
-           For individual goal usage please consult the fabric8 documentation
-        -->
-
         <profile>
             <id>f8-build</id>
             <build>
                 <defaultGoal>clean install docker:build fabric8:json</defaultGoal>
-            </build>
-        </profile>
-        <profile>
-            <id>f8-deploy</id>
-            <properties>
-                <fabric8.imagePullPolicySnapshot>Always</fabric8.imagePullPolicySnapshot>
-                <fabric8.recreate>true</fabric8.recreate>
-            </properties>
-            <build>
-                <defaultGoal>clean install docker:build docker:push fabric8:json fabric8:apply</defaultGoal>
             </build>
         </profile>
         <profile>
