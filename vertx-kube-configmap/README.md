@@ -2,17 +2,20 @@
 
 * Launch minishift
 
-    minishift start
-    minishit docker-env
-    
+```
+  minishift start
+  minishit docker-env
+```
+
 * Setup the Kubernetes ENV variable required on your machine 
 
+```
     export KUBERNETES_MASTER=https://192.168.64.11:8443
-    
+```    
 * Log to openshift
-    
+```    
     oc login 192.168.64.11:8443 -u admin -p admin
-    
+```    
 # Create a new project
     
     oc new-project vertx-demo
@@ -26,15 +29,13 @@
     oc create configmap special-config    
 
 * To compile
-
+```
     mvn clean install
-    
+```    
 * To build the docker image, generate the Kubernetes config file and deploy on OpenShift 
-
+```
     mvn -Popenshift   
-
-# Deploy project
-
+```
 
 # Troubleshoot
 
