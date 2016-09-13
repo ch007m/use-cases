@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.vertx.example.kubernetes</groupId>
+    <artifactId>simple-config-map</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <name>Vert.x Configuration - Kubernetes ConfigMap</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <vertx.version>3.3.3</vertx.version>
+        <fabric8.version>2.2.157</fabric8.version>
+        <fabric8.maven.plugin.version>3.1.38</fabric8.maven.plugin.version>
+        <main.verticle>io.vertx.example.kubernetes.MyVerticle</main.verticle>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-dependencies</artifactId>
+                <version>${vertx.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>fabric8-project-bom-with-platform-deps</artifactId>
+                <version>${fabric8.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- Vertx -->
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>me.escoffier.vertx</groupId>
+            <artifactId>vertx-configuration</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>me.escoffier.vertx</groupId>
+            <artifactId>vertx-configuration-kubernetes-configmap</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- Testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-unit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.1</version>
+                    <configuration>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.4.3</version>
+                <executions>
+                    <execution>
+                        <id>package-fat-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <outputFile>
+                                ${project.build.directory}/${project.artifactId}-${project.version}-fat.jar
+                            </outputFile>
+                            <transformers>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Main-Class>io.vertx.core.Launcher</Main-Class>
+                                        <Main-Verticle>${main.verticle}</Main-Verticle>
+                                    </manifestEntries>
+                                </transformer>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/services/io.vertx.core.spi.VerticleFactory</resource>
+                                </transformer>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>
+                                        META-INF/services/io.vertx.ext.configuration.spi.ConfigurationStoreFactory
+                                    </resource>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>openshift</id>
+            <properties>
+                <docker.group.name>vertx-demo</docker.group.name>
+                <docker.image>${docker.group.name}/${project.artifactId}:${project.version}</docker.image>
+            </properties>
+            <build>
+                <defaultGoal>clean install fabric8:build</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>fabric8-maven-plugin</artifactId>
+                        <version>${fabric8.maven.plugin.version}</version>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>${docker.image}</name>
+                                    <alias>vertx-demo</alias>
+                                    <build>
+                                        <from>java:8-jre-alpine</from>
+                                        <tags>
+                                            <tag>latest</tag>
+                                            <tag>${project.version}</tag>
+                                        </tags>
+                                        <workdir>/opt</workdir>
+                                        <entryPoint>
+                                            <exec>
+                                                <arg>java</arg>
+                                                <arg>-jar</arg>
+                                                <arg>${project.artifactId}-${project.version}-fat.jar</arg>
+                                            </exec>
+                                        </entryPoint>
+                                        <runCmds>
+                                            <runcmd>chmod -R 777 /opt</runcmd>
+                                            <runcmd>chmod -R 777 /opt/*</runcmd>
+                                        </runCmds>
+                                        <assembly>
+                                            <basedir>/</basedir>
+                                            <inline>
+                                                <files>
+                                                    <file>
+                                                        <source>
+                                                            ${project.build.directory}/${project.artifactId}-${project.version}-fat.jar
+                                                        </source>
+                                                        <outputDirectory>/opt</outputDirectory>
+                                                        <fileMode>0755</fileMode>
+                                                    </file>
+                                                </files>
+                                            </inline>
+                                        </assembly>
+                                    </build>
+                                </image>
+                            </images>
+                            <resources>
+                                <!-- Labels that are applied to all created objects -->
+                                <labels>
+                                    <group>vertx-demo</group>
+                                </labels>
+                                <!-- Definition of the ReplicationController / ReplicaSet. Any better name than "containers" ? -->
+                                <deployment>
+                                    <!-- Name of the replication controller, which will have a sane default (container alisa, mvn coords, ..) -->
+                                    <name>${project.artifactId}</name>
+                                    <!-- Replica count-->
+                                    <replicas>1</replicas>
+                                    <!-- Container to include in the POD template. By default all with a "build" section in the
+                                         "images" configuration will be add to the POD. However, they can be configured separately, too.
+                                        -->
+                                    <containers>
+                                        <container>
+                                            <!-- Alias name correlating with the same named "image" configuration above. Can be ommitted
+                                                 if there is only a single image added -->
+                                            <alias>vertx-demo</alias>
+                                            <ports>
+                                                <!-- Ports to expose in the pod specs -->
+                                                <port>8778</port>
+                                            </ports>
+                                            <mounts>
+                                                <scratch>/var/scratch</scratch>
+                                            </mounts>
+                                        </container>
+                                    </containers>
+                                </deployment>
+                                <!-- Dedicated section for (multiple) services to define -->
+                                <services>
+                                    <service>
+                                        <name>${project.artifactId}</name>
+                                        <headless>true</headless>
+                                    </service>
+                                </services>
+                            </resources>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!--
+           Default F8 commands:
+
+           mvn -Pf8-build         ... build Docker images and create OpenShift deployment configs
+           mvn -Pf8-deploy        ... f8-build + push to Docker registry + applying deployment config to OpenShift
+           mvn -Pf8-local-deploy ... deployment for a single node setup without pushing to a registry
+
+           For individual goal usage please consult the fabric8 documentation
+        -->
+
+        <profile>
+            <id>f8-build</id>
+            <build>
+                <defaultGoal>clean install docker:build fabric8:json</defaultGoal>
+            </build>
+        </profile>
+        <profile>
+            <id>f8-deploy</id>
+            <properties>
+                <fabric8.imagePullPolicySnapshot>Always</fabric8.imagePullPolicySnapshot>
+                <fabric8.recreate>true</fabric8.recreate>
+            </properties>
+            <build>
+                <defaultGoal>clean install docker:build docker:push fabric8:json fabric8:apply</defaultGoal>
+            </build>
+        </profile>
+        <profile>
+            <id>f8-local-deploy</id>
+            <properties>
+                <fabric8.recreate>true</fabric8.recreate>
+            </properties>
+            <build>
+                <defaultGoal>clean install docker:build fabric8:json fabric8:apply</defaultGoal>
+            </build>
+        </profile>
+
+        <profile>
+            <id>staging</id>
+            <repositories>
+                <repository>
+                    <id>staging</id>
+                    <url>https://oss.sonatype.org/content/repositories/iovertx-3295</url>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+
+</project>
