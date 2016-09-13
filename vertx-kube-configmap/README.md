@@ -30,14 +30,14 @@ oc policy add-role-to-group view system:serviceaccounts -n vertx-demo
 
 ```
 oc create configmap game-config --from-file=src/main/resources/game.properties --from-file=src/main/resources/ui.properties
-oc create configmap special-config 
+oc create configmap app-config --from-file=src/main/resources/app.properties
 ```
 
 # To consult the configMap (optional)
 
 ```
 oc get configmap game-config -o yaml
-oc get configmap/special-config -o yaml
+oc get configmap/app-config -o yaml
 ```
 
 * Build and deploy the project
@@ -46,9 +46,17 @@ oc get configmap/special-config -o yaml
 mvn -Popenshift   
 ```
 
-# Troubleshoot
+# Delete Replication controller, service, ConfigMap
 
 ```
-oc delete service,rc simple-config-map
+oc delete service simple-vertx-configmap
 oc delete rc simple-config-map
+oc delete configmap/game-config
+oc delete configmap/app-config
+```
+
+# Resize Pods
+
+```
+oc scale rc simple-config-map --replicas=0
 ```

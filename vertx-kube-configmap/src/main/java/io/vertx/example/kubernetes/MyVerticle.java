@@ -29,8 +29,7 @@ public class MyVerticle extends AbstractVerticle {
         store2.setType("configmap")
                 .setConfig(new JsonObject()
                         .put("namespace", "vertx-demo")
-                        .put("name", "special-config"));
-
+                        .put("name", "app-config"));
 
         ConfigurationService conf = ConfigurationService.create(vertx, new ConfigurationServiceOptions()
                 .addStore(store1).addStore(store2).addStore(store3));
