@@ -30,16 +30,6 @@ oc policy add-role-to-group view system:serviceaccounts -n vertx-demo
 # Create the ConfigMap
 
 ```
-Json
-oc create configmap game-config --from-file=src/main/resources/game.json
-oc create configmap ui-config --from-file=src/main/resources/ui.json
-oc create configmap app-config --from-file=src/main/resources/app.json
-
-Properties
-oc create configmap game-config --from-file=src/main/resources/game.properties
-oc create configmap ui-config --from-file=src/main/resources/ui.properties
-oc create configmap app-config --from-file=src/main/resources/app.properties
-
 Mix Json & Properties
 oc create configmap game-config --from-file=src/main/resources/game.properties
 oc create configmap ui-config --from-file=src/main/resources/ui.json
@@ -92,6 +82,7 @@ oc delete service simple-vertx-configmap
 oc delete rc simple-config-map
 
 oc delete configmap/game-config
+oc delete configmap/ui-config
 oc delete configmap/app-config
 ```
 
@@ -99,4 +90,18 @@ oc delete configmap/app-config
 
 ```
 oc scale rc simple-config-map --replicas=0
+```
+
+# Not used
+
+```
+Json
+oc create configmap game-config --from-file=src/main/resources/game.json
+oc create configmap ui-config --from-file=src/main/resources/ui.json
+oc create configmap app-config --from-file=src/main/resources/app.json
+
+Properties
+oc create configmap game-config --from-file=src/main/resources/game.properties
+oc create configmap ui-config --from-file=src/main/resources/ui.properties
+oc create configmap app-config --from-file=src/main/resources/app.properties
 ```

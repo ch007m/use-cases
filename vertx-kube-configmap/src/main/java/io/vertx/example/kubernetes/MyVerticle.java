@@ -16,6 +16,7 @@ public class MyVerticle extends AbstractVerticle {
                 .setConfig(new JsonObject()
                         .put("namespace", "vertx-demo")
                         .put("name", "game-config")
+                        // Name of the key corresponds to the name of the file containing the key/value imported
                         .put("key", "game.properties"));
 
         ConfigurationStoreOptions uiStore = new ConfigurationStoreOptions();
@@ -24,7 +25,7 @@ public class MyVerticle extends AbstractVerticle {
                         // Should work without defining the namespace as the env var KUBERNETES_NAMESPACE will be used
                         // .put("namespace", "vertx-demo")
                         .put("name", "ui-config")
-                        .put("key", "ui.properties"));
+                        .put("key", "ui.json"));
 
         ConfigurationStoreOptions appStore = new ConfigurationStoreOptions();
         appStore.setType("configmap")
