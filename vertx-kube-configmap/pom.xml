@@ -133,6 +133,7 @@
                 <fabric8.label.container>vertx</fabric8.label.container>
                 <fabric8.label.group>vertx-demo</fabric8.label.group>
                 <fabric8.service.type>LoadBalancer</fabric8.service.type>
+                <fabric8.recreate>true</fabric8.recreate>
             </properties>
             <build>
                 <defaultGoal>clean install docker:build fabric8:json fabric8:apply</defaultGoal>

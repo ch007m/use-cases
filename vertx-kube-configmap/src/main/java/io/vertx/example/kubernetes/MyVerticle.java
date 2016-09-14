@@ -10,29 +10,30 @@ public class MyVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
-        ConfigurationStoreOptions store1 = new ConfigurationStoreOptions();
-        store1.setType("configmap")
+        ConfigurationStoreOptions gameStore = new ConfigurationStoreOptions();
+        gameStore.setType("configmap")
                 .setFormat("properties")
                 .setConfig(new JsonObject()
                         .put("namespace", "vertx-demo")
                         .put("name", "game-config")
                         .put("key", "game.properties"));
 
-        ConfigurationStoreOptions store3 = new ConfigurationStoreOptions();
-        store3.setType("configmap")
+        ConfigurationStoreOptions uiStore = new ConfigurationStoreOptions();
+        uiStore.setType("configmap")
                 .setConfig(new JsonObject()
-                        .put("namespace", "vertx-demo")
-                        .put("name", "game-config")
+                        // Should work without defining the namespace as the env var KUBERNETES_NAMESPACE will be used
+                        // .put("namespace", "vertx-demo")
+                        .put("name", "ui-config")
                         .put("key", "ui.properties"));
 
-        ConfigurationStoreOptions store2 = new ConfigurationStoreOptions();
-        store2.setType("configmap")
+        ConfigurationStoreOptions appStore = new ConfigurationStoreOptions();
+        appStore.setType("configmap")
                 .setConfig(new JsonObject()
                         .put("namespace", "vertx-demo")
                         .put("name", "app-config"));
 
         ConfigurationService conf = ConfigurationService.create(vertx, new ConfigurationServiceOptions()
-                .addStore(store1).addStore(store2).addStore(store3));
+                .addStore(gameStore).addStore(uiStore).addStore(appStore));
 
         conf.getConfiguration(ar -> {
             if (ar.failed()) {
