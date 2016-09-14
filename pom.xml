@@ -45,7 +45,5 @@
         <module>vertx-tls</module>
         <module>jetty-cdi-standalone</module>
         <module>camel-ldap</module>
-        <module>camel-jms-inout</module>
-        <module>vertx-kube-configmap</module>
     </modules>
 </project>
