@@ -45,5 +45,6 @@
         <module>vertx-tls</module>
         <module>jetty-cdi-standalone</module>
         <module>camel-ldap</module>
+        <module>substitute-key-springboot</module>
     </modules>
 </project>
