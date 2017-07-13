@@ -1,0 +1,4 @@
+greeting:
+  message: ${MESSAGE:Hellooo, %s}
+
+server.port: ${SERVER_PORT:8080}
